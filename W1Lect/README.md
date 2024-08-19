@@ -12,24 +12,58 @@
     - notion of types must be present when defining functions
     - usually use type `double` and not single-precision `float`
 
-```bash
+```java
 jshell> double myFunc(double inputParam){
 ...>     return d;
 ...> }
 ```
 
 ## Primitive VS Reference Types
-- primitive types -> predefined by Java language specification (i.e. `int`, `boolean`)
+- primitive types (or literals) -> predefined by Java language specification (i.e. `int`, `boolean`)
+	- are statically typed (variable types must be declared before use)
+	- default values for primitives are **never null** -> Java language will assign them a given value
+
 - reference types -> non-primitives
-    - class types, intreface types, type vars
+    - class types, interface types, type vars
     - predefined in the JDK (i.e. `String`) or user-defined
-    - Wrapper Types: primitive values can "wrapped ard"/ boxed up on Wrapper Types (i.e. `Integer`, `Double`, `Boolean`)
+    - **Wrapper Types / Wrapper Objects**: primitive values can "wrapped ard"/ boxed up their Wrapper Types (i.e. `Integer`, `Double`, `Boolean`)
+	    - default values for these are null
+	    - are immutable (need to create a new instance when performing operations in memory) and are final (can't inherit from them)
+### Autoboxing and Unboxing
+- *def* Autoboxing: the auto conversion of primitive types to corresponding object wrapper classes
+```java
+// autoboxing
+Integer j = 1;
+Double dbl = 3.94;
+```
 
+- *def*: Unboxing: auto conversion of object wrapper types back into their corresponding primitive types
+```java
+// unboxing
+int newInt = new Integer(1);
+
+double primitiveDbl = dbl; // refer to above
+```
+
+**Consequences
+- drop in performance through creation of intermediary objects -> create more work for the Java garbage collector
+
+**When to use Wrapper classes**
+- when dealing with collections or generics $\implies$ required.
+- when we want to calculate `MIN_SIZE` or `MAX_SIZE` of a type.
+- when we want a null-able variable and we want the default value to be null
 ## Abstraction and OOP Concepts
-- *meaning*: reduce complexity by filtering out details
-- is the overarching theme to CS2030 (want to deal with issues pertaining to abstraction)
+- *meaning*: reduce complexity by filtering out the unnecessary (technical) details
+- is the **overarching theme** to CS2030 (want to deal with issues pertaining to abstraction)
 
-- devising a composite type to represent things in the real world
+- devising a composite / aggregated type to represent things in the real world
+	- i.e. Location may consist of the following building blocks:
+		```
+		descrip - String
+		lng value - double
+		lat value - double
+		```
+	- i.e. Person which has a lot of data points that we can quantify
 
 1. Constructor(s)
 ```java
@@ -103,4 +137,4 @@ f.apply(2)
 f.compose(f) // call the other function i.e. f⋅g(x)
 ```
 
-1. `forEach()`
+- `forEach()`, `reduce()` etc.
