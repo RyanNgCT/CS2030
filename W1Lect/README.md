@@ -45,7 +45,7 @@ int newInt = new Integer(1);
 double primitiveDbl = dbl; // refer to above
 ```
 
-**Consequences
+**Consequences**
 - drop in performance through creation of intermediary objects -> create more work for the Java garbage collector
 
 **When to use Wrapper classes**
@@ -71,9 +71,7 @@ record Location(String desc, double x, double y){
 
 }
 
-record Location(String desc, double lng, double lat, int postal){
-
-}
+record Location(String desc, double lng, double lat){}
 ```
 
 2. Instantiating Object
@@ -90,10 +88,38 @@ home.desc();
 ```
 
 4. `.equals()` method
-- written in the "proper" way
+	- written in the "proper" way
 ```java
 home.equals(new Location("home", 1.0, 2.0));
 ```
+
+5. Object's own functionalities
+	- i.e. for a Location Object to be able to compute it's own distance away from another point.
+
+*Traditional Approach*
+```java
+jshell> record Location(String desc, double lng, double lat){}
+|  replaced record Location
+
+jshell> Location myHome = new Location("Home base", 1.0, 1.0)
+myHome ==> Location[desc=Home base, lng=1.0, lat=1.0]
+
+jshell> double distanceBtwn(Location loc_1, Location loc_2){
+   ...>     double dY = loc_2.lat() - loc_1.lat();
+   ...>     double dX = loc_2.lng() - loc_1.lng();
+   ...>     return (dX * dX + dY * dY);
+   ...> }
+|  created method distanceBtwn(Location,Location)
+jshell> double newdbt = distanceBtwn(myHome, new Location("The Park", 10.5, 30.345));
+newdbt ==> 951.379025
+```
+
+*Using self-referencing*
+- have functional abstraction within this method itself.
+```
+
+```
+
 
 ## JShell
 1. `/save <filename>` - save jshell history as specified filename
