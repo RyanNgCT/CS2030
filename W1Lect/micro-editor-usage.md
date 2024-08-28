@@ -30,5 +30,8 @@ $ micro <file_name>
     - horizontal: `hsplit <filename>`
     - vertical: `vsplit <filename>`
 
+- opening and switching between new tabs:
+    - enter command mode with `Ctrl-E`, then type `tab <filename>.java` 
+
 ## Key bindings and configuration file
 - Location on Windows: `%userprofile%/.config/micro/bindings.json`
