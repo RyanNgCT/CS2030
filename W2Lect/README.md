@@ -36,6 +36,12 @@ jshell > IntStream.rangeClosed(1, 10).sum()
 55
 ```
 
+- chaining the pipeline:
+```java
+IntStream.rangeClosed(1, 10).
+   forEach(x -> System.out.println("x^2 of " + x + " is " + x * x));
+```
+
 Note: `jshell` uses the REPL method to check executability of the program and execute it if possible
 
 ```java

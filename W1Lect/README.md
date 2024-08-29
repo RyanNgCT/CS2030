@@ -181,3 +181,12 @@ f.compose(f) // call the other function i.e. f⋅g(x)
 List<Location> locs = List.of(home, new Location("Shop", 2.5, 3.5));
 locs.stream(); // turning the list of locations into a stream
 ```
+
+- advantages: 
+	- looping without having to write a loop
+	- no assignment of variables (use of lambda expressions)
+
+
+`stream.reduce()` args
+1. seed value
+2. lambda expression
