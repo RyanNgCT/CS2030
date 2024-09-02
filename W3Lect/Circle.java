@@ -28,20 +28,13 @@ class Circle {
     // }
 
     Circle scale(double factor){
-        return new Circle(
-            this.centre
-                .map(c -> new Circle(c, this.radius * factor))
-                .orElse(new Circle(this.radius * factor))
-        );
+        return this.centre.map(c -> new Circle(c, this.radius * factor)).orElse(new Circle(this.radius * factor));
     }
-
     // boolean isOverlap(Circle otherCircle){
     //     return this.centre
-    //         .map(c -> otherCircle.centre)
-    //         .map()
+    //         .map(c -> otherCircle.centre.map(d -> this.distanceTo(d) < c + d))
+    //         .orElse(false);
     // }
-
-
 
     public String toString(){
         return "Circle at " + this.centre + " with radius " + this.radius;

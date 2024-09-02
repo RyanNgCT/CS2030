@@ -18,6 +18,8 @@ $$
 	1. data source to start the stream (i.e. `rangeClosed`, `iterate`, `generate`)
 	2. intermediate operations (i.e. `limit`, `filter`, `map`) to perform specific operations on the elements of the stream.
 	3. a terminal operation (i.e. `sum`, `reduce`, `forEach`) to specify tasks to perform on the stream's elements
+      - cannot have two terminal operators (i.e. when needing to print and sum elements, write **two different streams**!)
+
 #### Integer Streams
 - forming a stream for the domain $D = [1, n] \implies$ using the `.rangeClosed()` function.
 - forming a steam with the `range()` function: i.e. $D = [1, n) \implies$ using the `.range()` function 
@@ -42,7 +44,8 @@ IntStream.rangeClosed(1, 10).
    forEach(x -> System.out.println("x^2 of " + x + " is " + x * x));
 ```
 
-Note: `jshell` uses the REPL method to check executability of the program and execute it if possible
+Note: `jshell` uses the REPL method to check executability of the program and execute it if possible.
+- $\therefore$ cannot just press enter when you have subsequent methods to call on a new line for readability.
 
 ```java
 jshell> IntStream.rangeClosed(1,10).
@@ -85,3 +88,7 @@ Filter: 4
 Iter: 4
 Filter: 5
 ```
+
+#### Reduce
+- format of reduce is as below.
+![streams-reduce-format](../assets/streams-reduce-format.png)
