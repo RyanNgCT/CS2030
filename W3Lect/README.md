@@ -14,6 +14,7 @@
     - functional abstraction: e.g. a point can determine the diatnce from itself to another point on the same plane.
 
 2. Encapsulation: packaging and hiding (of info that client doesn't need to know)
+    - packaging: use of classes to package lower level functionality and data
 
 3. Object
     - abstraction of closely-related data (properties) and behaviour or functionality (methods)
