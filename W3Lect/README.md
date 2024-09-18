@@ -26,11 +26,15 @@
 
 ## Tips
 ⚠️ write methods **only when they are needed** by the client (take a conservative approach)!
-    -> no marks for standard "getter, setter, constructor, toString etc."
+    $\implies$ no marks for standard "getter, setter, constructor, toString etc."
+
 ⚠️ don't use `null`!
+
 ⚠️ classes written should be *immutable*! -> to follow sound principles
+
 ⚠️ try to stay away from using the `record`, **except** when creating meaningful composite data types like `Pair<T, U>`
     -> try to avoid behaviour (through using `record`s) that violates "Tell-Don't-Ask" principle.
+
 ⚠️ don't replace a variable with another value -> hence use `private final ...`
 
 ✅ use assignment operators (i.e. ` ... = ...`) to make the code look nicer and more readable, but use them sparingly.
