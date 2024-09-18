@@ -152,3 +152,25 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 ```
 
 - return values are **very important** when trying to do any form of method chaining (i.e. `c1.getArea(...).moveBy(...)`)
+
+---
+### The `List` interface
+- cannot do `new List()`
+- cannot add elements to `List.of()` $\implies$ immutable type
+
+- don't allow mutable types like `ArrayList` due to side-effects (mutability)
+
+- `List<E>` is a generic interface because of the angled brackets
+	- can be an interface of anything
+
+#### Super Interfaces
+- one or more interfaces that an interface abides by
+
+---
+### Functional Interfaces
+- are interfaces with a **single abstract method**
+- implementations of a functional interfaces can be a Concrete Class, an Anonymous Class or a Lambda Expression
+	- for lambda operations like `filter()` and `allMatch()`, we specify the implementation of the Predicate interface
+		- `interface Predicate<T>` is a functional interface with only *one method*
+
+	![stream_api](../assets/stream_api.png)

@@ -1,9 +1,9 @@
 # Week 6 - Java Generics
-- in its simplest form, it is invariant -> can only have PQ<Shape> accept Collection<Shape>
+- in its simplest form, it is invariant -> can only have `PQ<Shape>` accept `Collection<Shape>`
 
 - why we use our own Priority Queue
     - Java's implementation of `PriorityQueue<E>` is mutable (we don't use mutable stuff in class)
-    - `<E>` has to be the primitive type
+    - `<E>`has to be the primitive type
 
 - mutating structure
 - using `pq.poll()` returns null
@@ -48,23 +48,23 @@ Use `E extends Comparable<E>` to restrict types
 - Enables the abstract class to take in anything below it (classes and subclasses).
     - use `<? extends E>` or "any extends E"
 
-- allows PQ<Shape> to accept both List.of(Circle) and List.of(Rectangle)
+- allows `PQ<Shape>` to accept both `List.of(Circle)` and `List.of(Rectangle)`
 
 ## Lower bounded Wildcard
-- Circle does not implement Comparable<Circle> but only implements Comparable<Shape>
+- Circle does not implement `Comparable<Circle>` but only implements `Comparable<Shape>`
 
 - enables things above Circle to be admissible
-    `E extends Comparable<? super E>` -- also termed "any super"
+    ```E extends Comparable<? super E>``` $\implies$ also termed "any super"
 
 
 - PECS
-Function consumes T (hence super)
-Function produces something (hence extends)
+	- Function consumes T (hence super)
+	- Function produces something (hence extends)
 
-Comparator/Comparable consumes
-Collection produces
+- Comparator/Comparable consumes
+- Collection produces
 
-- List.of() or PQ.of() is called from the class -> does not know what is E that is declared (use static keyword)
+- `List.of()` or `PQ.of()` is called from the class -> does not know what is E that is declared (use static keyword)
 
 ## type witnessing
 - explicitly states the type (don't leave it to type inference)
