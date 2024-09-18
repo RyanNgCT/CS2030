@@ -1,5 +1,5 @@
 // the "Blueprint" of the object
-class Point implements Moveable{
+class Point implements Movable{
 
     // define the variables or properties
     private final double x;
