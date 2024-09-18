@@ -72,18 +72,31 @@ public String toString(String name){
 - making the properties `private` -> so that other classes cannot access (don't provide direct access)
     - MUST make properties private in CS2030 (restrict client access)
 
-Guiding principle: Tell-Don't-Ask
-- `private final`: can only be accessed at the constructor level
+**Guiding principle: Tell-Don't-Ask**
+- `private final`: can only be assigned a value at the constructor level.
 - don't use getters or accessors!
+- accessors can be used as a helper (i.e. `private double getX()`)
+
+Objects should be immutable!
+- methods should not be able to change properties of objects.
+- methods should return us something -> a new object (not `void`)!
+- don't want objects to suddenly change to something else (or have a side effect)
 
 ### Record
 - can print values (purpose is to store values)
 
-### Examples
-- Don't use `null`, use optionals instead
-```java
-import java.util.Optional;
+## Optionals
+- Don't use `null`, use optionals instead (sometimes have something, sometimes don't have it)
+    - wrap optional around the type that we might not have
 
+- Optional.empty() is a value in the domain of a function
+    - have a correct type to include the missing type (or in this case `Optional<Point>`)
+
+- use `.map()` (typically) or `filter()` to do something to the value contained inside the optional (some operation)
+- use `.orElse` to return the value inside the optional, otherwise return something else specified (provided as part of `orElse`inside the brackets)
+
+```java
+import java.util.Optional; // needed
 class Circle {
     private final Optional<Point> centre;
     ...
@@ -98,7 +111,10 @@ points ==> [(0.0, 0.0), (2.0, 2.0)]
 jshell> points.stream().map(x -> x.distanceTo(new Point(1.0, 1.0))).toList()
 $17 ==> [1.4142135623730951, 1.4142135623730951]
 ```
+
+### Abstraction Barrier
 - no longer client's concern to know about formula for calculate distanceTo (i.e. $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$ )
+- avoid providing backdoor access to properties
 
 ---
 

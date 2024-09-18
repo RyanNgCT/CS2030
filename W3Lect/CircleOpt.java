@@ -30,13 +30,23 @@ class CircleOpt {
     CircleOpt scale(double factor){
         return this.centre.map(c -> new CircleOpt(c, this.radius * factor)).orElse(new CircleOpt(this.radius * factor));
     }
-    // boolean isOverlap(Circle otherCircle){
-    //     return this.centre
-    //         .map(c -> otherCircle.centre.map(d -> this.distanceTo(d) < c + d))
-    //         .orElse(false);
-    // }
+    boolean isOverlap(CircleOpt otherCircle){
+        return this.centre
+            .map(
+                c -> otherCircle.centre
+                    .map(
+                        d -> c.distanceTo(d) < (this.radius + otherCircle.radius)
+                    )
+                    .orElse(false)
+                )
+            .orElse(false);
+    }
 
     public String toString(){
-        return "Circle at " + this.centre + " with radius " + this.radius;
+        // return "Circle at " + this.centre + " with radius " + this.radius;
+
+        return this.centre
+            .map(c -> "Circle at "+ c +  " with radius " + this.radius)
+            .orElse("Circle with radius " + this.radius);
     }
 }
