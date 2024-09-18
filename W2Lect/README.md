@@ -6,7 +6,7 @@ Formulae for summation formula:
 $$
     \sum_{x=1}^{n} x
 $$
-- need to do some kind of looping, with some form of accumulation and aggregator
+- need to do some kind of looping, with some form of accumulation and aggregator to sum the values
 
 - Using *streams*: Writing things in a pipeline form: i.e. `x.y().z()...`
 

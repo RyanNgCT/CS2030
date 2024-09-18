@@ -133,7 +133,7 @@ record Location(String desc, double lat, double lng){
 1. `/save <filename>` - save jshell history as specified filename
 2. `/list`
 3. `/var` - see the type of the list
-
+4. use `/list` and then `/drop <number>` to "clear the specific memory variable" of jshell
 ## Java Generics
 - Python, we use the built-in `list()` so in Java, there is also an equivalent `List`.
 - initialise list using the `List.of()` method, passing in one or more arguments.

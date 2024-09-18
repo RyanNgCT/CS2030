@@ -1,13 +1,9 @@
-class Circle implements Shape{
-    protected final double radius;
+class Circle{
+    private final double radius;
 
     Circle(double radius){
         this.radius = radius;
     }
-
-    // public Circle moveBy(double x, double y){
-    //     return new Circle(centre.moveBy(x, y), this.radius);
-    // }
 
     public double getArea(){
         return Math.PI * this.radius * this.radius;

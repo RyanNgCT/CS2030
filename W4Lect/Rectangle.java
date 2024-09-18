@@ -10,4 +10,8 @@ class Rectangle implements Shape {
     public double getArea(){
         return this.length * this.width;
     }
+
+    public String toString(){
+        return "Rectangle of dimensions " + this.length + " by " + this.width;
+    }
 }
