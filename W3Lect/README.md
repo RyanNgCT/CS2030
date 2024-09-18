@@ -2,52 +2,70 @@
 
 ## Data Process Model vs OOP
 - i.e. `distanceBtwn(Point a, Point b)` method
-    - Points -> are the data
-    - seperate from the process (which is the distanceBtwn function itself)
+    - Points -> are the data (method takes in two params)
+    - seperate from the process (which is the `distanceBtwn` function itself)
 
 - i.e. `distanceTo(Point othr)` method
     - requires just one other point to find the difference between itself and the other point
 
 ## Big ideas from this lecture
 1. Abstraction: data & functional abstraction
-    - data abstraction: point comprises of two floating-point values (for the implementation details, client doesn't need to know or care about).
-    - functional abstraction: e.g. a point can determine the diatnce from itself to another point on the same plane.
+    - **data abstraction**: point comprises of two floating-point values (for the implementation details, client doesn't need to know or care about the internal representation or functionality).
+    - **functional abstraction**: e.g. a point can determine the distance from itself to another point on the same plane.
 
 2. Encapsulation: packaging and hiding (of info that client doesn't need to know)
     - packaging: use of classes to package lower level functionality and data
+        - packaging of lower level data (i.e. coord points)
+        - packaging of lower level functionality (i.e. calculating distance btwn points in the `Point` class)
+        - allows one to "make a client" (a.k.a. JShell)
 
 3. Object
-    - abstraction of closely-related data (properties) and behaviour or functionality (methods)
+    - abstraction of closely-related data (properties / instance fields) and behaviour or functionality (methods).
     - a blueprint of the object is called a **class**.
 
 
 ## Tips
-⚠️ write methods **only when they are needed** (take a more conservative approach)!
+⚠️ write methods **only when they are needed** by the client (take a conservative approach)!
+    -> no marks for standard "getter, setter, constructor, toString etc."
 ⚠️ don't use `null`!
-⚠️ classes written should be immutable!
-⚠️ try to stay away from using the `record`, except when creating meaningful composite data  types like `Pair<T, U>`
-    -> try to avoid behaviour that violates "Tell-Don't-Ask" principle.
+⚠️ classes written should be *immutable*! -> to follow sound principles
+⚠️ try to stay away from using the `record`, **except** when creating meaningful composite data types like `Pair<T, U>`
+    -> try to avoid behaviour (through using `record`s) that violates "Tell-Don't-Ask" principle.
+⚠️ don't replace a variable with another value -> hence use `private final ...`
 
-✅ use assignment operators (i.e. `=`) to make the code look nicer and more readable, but use sparingly.
+✅ use assignment operators (i.e. ` ... = ...`) to make the code look nicer and more readable, but use them sparingly.
+    -> D.R.Y. principle / copy pasting similar codes
 
 ## Class conventions
-- constructor of the class is the same as the class name itself
+- constructor of the class is the *same as the class name* itself
 - `--enable-preview` option when compiling is only needed for a nameless class
 
+### Constructor
+- should take in all the `private` properties defined in the class
+- anytime we are referring to certain properties / methods within the class -> use the `this` keyword.
+- we invoke the constructor through the `new` keyword.
+
 ### ToString method
+- allows the output to be "customized" if someone wants to print the point that is meaningful to the client/user
+- usually at the end because it is the most unimportant
 ```java
+// signature is always like that
 public String toString(String name){
     return "Hello, " + name;
 }
 ```
+## Dependency
+- establish a `has-a` relationship btwn Circle and Point
 
 ### Class Examples
 - Point class is standalone, does not depend on other classes
 - Circle class depends on Point class
-
+    - if Point provides the service of calculating distance, we should just use it in the `Circle` class instead of reinventing the wheel (providing the services of the class).
 
 *Cyclic dependencies*
 - cannot have two class files that depend on each other 
+- best design is to have a "base" class and build on top of that
+    -> a class should have a single responsibility (containment is a circle thing, not a point thing)
 
 
 ### Access modifiers
