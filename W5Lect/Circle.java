@@ -1,12 +1,8 @@
-class Circle implements Shape, Moveable{
+class Circle implements Shape{
     private final double radius;
 
     Circle(double radius){
         this.radius = radius;
-    }
-
-    public Circle moveBy(double x, double y){
-        return new Circle(centre.moveBy(x, y), this.radius);
     }
 
     public double getArea(){

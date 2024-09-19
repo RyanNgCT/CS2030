@@ -1,5 +1,5 @@
 // the "Blueprint" of the object
-class Point implements Moveable{
+class Point{
 
     // define the variables or properties
     private final double x;
@@ -12,10 +12,6 @@ class Point implements Moveable{
         // -> referring to the properties of the instance of the class / current object
         this.x = x;
         this.y = y;
-    }
-
-    public Point moveBy(double dx, double dy){
-        return new Point(this.x + dx, this.y + dy);
     }
 
     // compute distance from itself to another point
