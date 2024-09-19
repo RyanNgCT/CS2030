@@ -1,5 +1,5 @@
 class Circle implements Shape{
-    private final double radius;
+    protected final double radius; // change to protected to let children access prop in constructor
 
     Circle(double radius){
         this.radius = radius;
@@ -9,6 +9,8 @@ class Circle implements Shape{
         return Math.PI * this.radius * this.radius;
     }
 
+
+    @Override
     public String toString(){
         return "Circle with radius: " + this.radius;
     }
