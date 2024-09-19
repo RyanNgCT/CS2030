@@ -174,7 +174,6 @@ f.compose(f) // call the other function i.e. f⋅g(x)
 
 - `forEach()`, `reduce()` etc.
 
-
 ### Streams
 - functionality of Java, somewhat like loops
 ```Java

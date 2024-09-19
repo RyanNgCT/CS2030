@@ -1,11 +1,12 @@
 # Lecture 4 - Interfaces and Polymorphism
 - interfaces are for constructing contracts (between **clients** and **implementers**)
-    - interfaces enable the Polymorphic principle of classes
+    - interfaces enable the Polymorphic principle of methods
     - interfaces sit between the client and the implementer
 
 - When talking about Circle and Point in our previous discussions:
 	- **Point (Implementer)**
-		- can actually change methods if it wants to that would potentially break the client (i.e. implementer can sabotage the client)
+		- can actually change methods if it wants to that would potentially break the client (i.e. implementer can sabotage the client) 
+			- $\implies$ should have a **contract of services** that both parties (client and implementer obey), which is called **programming to the interface, not the implementer**
 	- **Circle (Client $\implies$ needs point)**
 		- has a point as its centre
 		- will make use of services provide by the `Point` class
@@ -19,9 +20,9 @@
 Interfaces are somewhat similar to abstract class that they guarantee an implementation of some methods / API
 
 ### Notation (Relationships)
-- solid lines for `has-a` relationships
+- *solid lines* for `has-a` relationships
 	- "Circle has-a point" as its centre
-- dotted line for softer dependency (`is-a` relationship)
+- *dotted line* for softer dependency (`is-a` relationship)
 	- "Circle is-a shape"
 
 ### Rules
@@ -74,6 +75,8 @@ $11 ==> 12.566370614359172
 
 ```
 
+Note: the `findVolume()` method takes in something of "interface type" `Shape`, but **not a Shape object** $\implies$ since Shape cannot be instantiated (it is an interface)
+
 ```java
 // creating a rectangle object
 jshell> Rectangle rect = new Rectangle(15.0, 2.0);
@@ -100,10 +103,10 @@ $22 ==> 143.87237716379818
 ```
 
 ### Is-A Relationships & Polymorphism
-something can **take many forms**
+something can **take many forms** (i.e. Shape can be a rectangle or a circle, or another other shape that *implements it*)
 - it will **behave differently** when it takes the different forms (i.e. `getArea()` for Circle has its own implementation and likewise for `getArea()` of Rectangle or any classes extending the Shape interface)
 	- $(\pi \cdot radius^2) \: versus \: (w \cdot h)$
-- can create a list of different shapes
+- can create a list of different shapes and run `findVolume()` on all of them at one go
 	- put in the specific implementations in the immutable list (i.e. using `List.of()`)
 ```java
 jshell> List<Shape> sList = List.of(new Circle(2.5), new Rectangle(4, 5), new Circle(1.2))
@@ -113,8 +116,11 @@ jshell> sList.stream().map(shp -> findVolume(shp, 7.5)).toList()
 $27 ==> [147.26215563702155, 150.0, 33.929200658769766]
 ```
 
-
 ### Multiple Interfaces
+- individual interfaces should specify what classes that implement them do (Interface Segregation Principle - a.k.a. don't force code to depend on methods that it *does not utilize*)
+
+	![why-dont-combine-interfaces](../assets/why-dont-combine-interfaces.png)
+
 ```java
 jshell> Circle c = new Circle(10, new Point(4, 5))
 c ==> Circle with radius: 10.0 and centre (4.0, 5.0)
@@ -155,8 +161,9 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 
 ---
 ### The `List` interface
-- cannot do `new List()`
-- cannot add elements to `List.of()` $\implies$ immutable type
+- cannot do `new List()` since it is an interface (can't instantiate objects from interfaces)
+- cannot add elements / perform modifications using `List.of()` creation syntax $\implies$ immutable `AbstractImmutableList` type 
+	- `of()` is the "factory method" of the interface `AbstractImmutableList`
 
 - don't allow mutable types like `ArrayList` due to side-effects (mutability)
 
@@ -165,12 +172,58 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 
 #### Super Interfaces
 - one or more interfaces that an interface abides by
+	- i.e. `List` abides by `add()` and `sizeof()` methods specified by `Collection` interface and other from `Sequence` etc.
 
 ---
 ### Functional Interfaces
 - are interfaces with a **single abstract method**
-- implementations of a functional interfaces can be a Concrete Class, an Anonymous Class or a Lambda Expression
+	- so that there is no ambiguity to the method that the implementer is implementing (i.e. `Circle` is guaranteed to only implement `moveBy(x,y)` which takes in two `double`s)
+
+- each *lambda expression* is an implementation of *some functional interface* in the Java API
+	- i.e. we pass `new Circle(...)` into `shapeList.stream().filter()`
+	- there is no indication that we are writing a predicate or whatever input type for the abstract method of the functional interface (i.e. don't need to specify it is for `public boolean test()`)
+
+- implementations of a functional interfaces can be a *Concrete Class, an Anonymous Class or a Lambda Expression* (lambda is preferred)
 	- for lambda operations like `filter()` and `allMatch()`, we specify the implementation of the Predicate interface
-		- `interface Predicate<T>` is a functional interface with only *one method*
+		- i.e. `interface Predicate<T>` is a functional interface with only *one method*
 
 	![stream_api](../assets/stream_api.png)
+
+#### Types of Functional Interfaces
+1. **Primitive Functional Interfaces**
+	1. interfaces whose type is fixed (i.e. `IntPredicate`)
+	2. refer to documentation for single abstract methods that need to be implemented
+		1. i.e. `test(int x)` for `IntPredicate`
+		2. i.e. `applyAsInt(int x)` for `IntUnaryOperator`
+
+2. **Generic Functional Interfaces**
+	1. Similar to primitive one, but the type is general and not fixed (i.e. the corresponding generic functional interface for the primitive interface `IntPredicate` can be `Predicate<T>`, where `<T>` can be `String` or `Integer` etc.)
+	2. Case Study example 1: [`Comparable<T>`](https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html)
+		1. `Comparable` is implemented to provide natural ordering amongst object of a particular class
+		2. has an *abstract method `compareTo()`* $\implies$ compares itself against another string, lexicographically
+
+		![generic-int-comparable-abstract-method](../assets/generic-int-comparable-abstract-method.png)
+
+
+	3. Case Study example 2: [`Comparator<T>`](https://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html) $\implies$ ignore the `equals(Object obj)` method inherited from `java.lang.Object`.
+		1. used for comparing the lengths between `String`s or other generic types(?)
+		2. takes in two arguments (unlike the one for `Comparable<T>`)
+
+		![generic-int-comparator-abstract-method](../assets/generic-int-comparator-abstract-method.jpg)
+		3. Lambda expression as a `Comparator`
+		```java
+		Comparator<String> cmpLen = (x, y) -> x.length() - y.length();
+		cmpLen("xyz", "abc"); // returns 0
+
+		List.of("abc", "xyz").sort(cmpLen) // cannot sort the list -> immutable
+		
+		// get a new list that is sorted
+		List.of("abc", "xyz").stream().sorted(cmpLen).toList() 
+		```
+
+	4. Additional example: `UnaryOperator<T>`
+		1. inherits abstract method `apply(T t)` from `Function<T, R>`
+
+#### Finding functional interfaces
+- under the method documentation in Java docs, find "Specified by", which implies that the method follows some contract (i.e. there is some interface for it)
+	- i.e. `String` implements `Comparable<T>`
