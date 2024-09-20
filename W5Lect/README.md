@@ -35,3 +35,17 @@
 
 ### `protected` access modifier
 - provides access to properties / methods to all other classes within the same package (not only for the child classes' access itself)
+
+- if we have to use `private final` for the super classes' property that the child class accesses
+	- idea: let the parent class take charge of  constructing the `radius`
+
+### Method Overloading
+- methods of the same name, but using different argument lists.
+- number, type and order of args matter! $\implies$ focus on that is inside the brackets.
+	- not the return type or accessibility
+	-  i.e. `toString()` versus `toString(String prompt)`
+
+#### Constructor Overloading
+- constructor is just a special variant of method to instantiate object
+- ensure that there are clear differences in method signature (***number of args, input type, order of arguments*** etc.) to ensure that there is no ambiguity btwn constructors so that code can compile.
+- can have one constructor make use of another overloaded one by using `this(...)`

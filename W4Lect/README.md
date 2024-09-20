@@ -159,6 +159,8 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 
 - return values are **very important** when trying to do any form of method chaining (i.e. `c1.getArea(...).moveBy(...)`)
 
+- use of `default` methods (impure interface) $\implies$ child class can't decide which one to use
+
 ---
 ### The `List` interface
 - cannot do `new List()` since it is an interface (can't instantiate objects from interfaces)

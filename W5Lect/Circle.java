@@ -5,6 +5,14 @@ class Circle implements Shape{
         this.radius = radius;
     }
 
+    // re-produces the circle ("copy")
+    Circle(Circle c){
+        //this.radius = c.radius;
+
+        // more succinct way
+        this(c.radius);
+    }
+
     public double getArea(){
         return Math.PI * this.radius * this.radius;
     }
