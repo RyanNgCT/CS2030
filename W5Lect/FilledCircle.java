@@ -11,7 +11,7 @@ class FilledCircle extends Circle { // implements Shape
     }
 
     // overloaded constructor method to enable parent to manage radius creation
-    FilledCircle(Circle c, Color color){
+    private FilledCircle(Circle c, Color color){
         super(c);
         this.color = color;
     }
@@ -21,11 +21,11 @@ class FilledCircle extends Circle { // implements Shape
         // better to use super.radius then this.radius
         // return new FilledCircle(super.radius, color);
 
-        return new FilledCircle(this, color); // current object is a child of Circle
+        return new FilledCircle(this, color); // current object is a child of Circle -> call overloaded constructor
     }
 
-    public FilledCircle changeRadius(double rad){
-        return new FilledCircle(rad, this.color);
+    public FilledCircle changeRadius(double radius){
+        return new FilledCircle(radius, this.color);
     }
 
     @Override
