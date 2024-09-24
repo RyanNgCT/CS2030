@@ -5,7 +5,10 @@
     - Java's implementation of `PriorityQueue<E>` is mutable (we don't use mutable stuff in class)
     - `<E>`has to be the primitive type
 
+
+## Java's Mutable `PriorityQueue<E>`
 - mutating structure
+	- can be used to store many different Reference Types (sorta like a "list" but with another data structure)
 - using `pq.poll()` returns null
 
 ## Creating our own PQueue

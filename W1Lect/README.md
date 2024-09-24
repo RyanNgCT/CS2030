@@ -137,7 +137,7 @@ record Location(String desc, double lat, double lng){
 ## Java Generics
 - Python, we use the built-in `list()` so in Java, there is also an equivalent `List`.
 - initialise list using the `List.of()` method, passing in one or more arguments.
-	- type contained within the `List` wrapper class does not seem to matter -> infer type of list.
+	- type contained within the `List` wrapper class does not seem to matter $\implies$ infer the type of list.
 - need the wrapper type for individual elements (i.e. can specify `List<Integer>` but **NOT** `List<int>`)
 
 ## Functional Programming Principles
@@ -181,7 +181,7 @@ List<Location> locs = List.of(home, new Location("Shop", 2.5, 3.5));
 locs.stream(); // turning the list of locations into a stream
 ```
 
-- advantages: 
+- **advantages:** 
 	- looping without having to write a loop
 	- no assignment of variables (use of lambda expressions)
 

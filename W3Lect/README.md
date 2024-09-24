@@ -14,10 +14,13 @@
     - **functional abstraction**: e.g. a point can determine the distance from itself to another point on the same plane.
 
 2. Encapsulation: packaging and hiding (of info that client doesn't need to know)
-    - packaging: use of classes to package lower level functionality and data
+    - *packaging*: use of classes to package lower level **functionality and data**
         - packaging of lower level data (i.e. coord points)
         - packaging of lower level functionality (i.e. calculating distance btwn points in the `Point` class)
-        - allows one to "make a client" (a.k.a. JShell)
+        - allows one to "make a client" (a.k.a. `JShell`)
+
+	- allows one to hide information from the client / client classes
+		- can't get the internal data/methods without first utilizing the external `public` method/service provided by the class
 
 3. Object
     - abstraction of closely-related data (properties / instance fields) and behaviour or functionality (methods).
@@ -69,12 +72,18 @@ public String toString(String name){
 *Cyclic dependencies*
 - cannot have two class files that depend on each other 
 - best design is to have a "base" class and build on top of that
-    -> a class should have a single responsibility (containment is a circle thing, not a point thing)
+    -> a class should only have a *single responsibility* (containment is a circle thing, not a point thing)
 
 
 ### Access modifiers
-- making the properties `private` -> so that other classes cannot access (don't provide direct access)
-    - MUST make properties private in CS2030 (restrict client access)
+- the most common access modifiers are `public`, `private` and `protected` (if no access modifier is specified then the thing defined thereafter is of `package` access)
+
+- making the properties `private` $\implies$ so that other classes cannot access (don't provide direct access)
+    - MUST make properties **private** in CS2030 (restrict client access)
+
+	- `public` modifier allows unrestricted access to properties and methods for modification $\implies$ not a good practice!
+
+- child classes can only use properties or methods scoped as `public` or `protected`
 
 **Guiding principle: Tell-Don't-Ask**
 - `private final`: can only be assigned a value at the constructor level.
