@@ -8,7 +8,7 @@ class Circle implements Shape {
     // re-produces the circle ("makes a copy") -> for FilledCircle to use
     protected Circle(Circle c){
         //this.radius = c.radius;
-
+        
         // more succinct way than the above
         this(c.radius);
     }

@@ -104,8 +104,12 @@ class FilledCircle {
 #### Constructor Overloading
 - constructor is just a special variant of method to instantiate object
 - ensure that there are clear differences in method signature (***number of args, input type, order of arguments*** etc.) to ensure that there is no ambiguity btwn constructors so that code can compile.
-- can have one constructor ***make use of another*** overloaded one by using `this()` constructor method $\implies$ using `this(circle.radius)` invokes the constructor `Circle(double radius)`.
 
+#### Constructor Chaining
+- can have one constructor ***make use of another*** overloaded one by using `this()` constructor method $\implies$ using `this(circle.radius)` invokes the constructor `Circle(double radius)`.
+	- `this(...)` looks for another constructor with a matching (constructor) signature
+	- can only call one constructor within another and it should be at the top line!
+	![constructor-chaining](../assets/constructor-chaining.png)
 ### Method Overriding
 - only for inheritance relationships, not for interfaces
 - done by default when we specify a "custom" method with the same signature in the child/sub-class (as the super class).
@@ -280,6 +284,13 @@ public boolean equals(Object obj){
 - abstract methods (to be implemented by their children)
 - other methods
 
+*Important Pointers*
+- Abstract classes can't be instantiated
+- use the `abstract` keyword to define abstract methods which have no method body
+	- not necessary / not a must that an abstract class has an abstract method
+
+- subclass of the abstract class must implement all abstract methods where specified
+
 *Samples:*
 ```java
 import java.awt.Color;
@@ -296,8 +307,6 @@ abstract class FilledShape{
 	Color getColor(){
 		return this.color;
 	}
-	
-	
 	
 	@Override
 	public String toString(){
