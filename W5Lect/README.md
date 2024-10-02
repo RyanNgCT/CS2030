@@ -160,6 +160,7 @@ jshell> foo(expression_s); // expression_s is the parameter passed into method f
 
 #### Liskov Substitution Principle
 - an object such as a class can replace by a sub-object (i.e. sub-class that *extends* that first class), without breaking the program.
+	- used as developers use *inheritance* concepts
 
 ---
 ### Compile-Time vs Run-Time type
@@ -276,20 +277,25 @@ public boolean equals(Object obj){
 	- should restrict yourself to using "`instanceof A`" only within class `A` itself.
 
 ### Abstract classes
+- are a "template"
 ![constructs](../constructs.png)
 
 
 **Abstract Classes** have the following:
 - properties
-- abstract methods (to be implemented by their children)
-- other methods
+- usually have $\gt 1$ abstract method (to be implemented by their children)
+	- they don't contain a method body/implementation details
+- other methods (i.e. `toString()`)
 
 *Important Pointers*
 - Abstract classes can't be instantiated
+- Abstract classes can't be marked as final too (required to have a child class to implement methods)
 - use the `abstract` keyword to define abstract methods which have no method body
-	- not necessary / not a must that an abstract class has an abstract method
+	- *not necessary / not a must* that an abstract class is required to have an abstract method
 
-- subclass of the abstract class must implement all abstract methods where specified
+- subclass of the abstract class **must implement all abstract methods** where specified $\implies$ to ensure compile time safety
+
+- when we know the methods, but we may not know how they are implemented
 
 *Samples:*
 ```java

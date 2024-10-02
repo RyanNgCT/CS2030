@@ -29,6 +29,8 @@ jshell> double myFunc(double inputParam){
     - **Wrapper Types / Wrapper Objects**: primitive values can "wrapped ard"/ boxed up their Wrapper Types (i.e. `Integer`, `Double`, `Boolean`)
 	    - default values for these are null
 	    - are immutable (need to create a new instance when performing operations in memory) and are final (can't inherit from them)
+\
+- wrapper classes/types add functionality to existing classes without inheritance or convert a primitive data type into a class
 ### Autoboxing and Unboxing
 - *def* Autoboxing: the auto conversion of primitive types to corresponding object wrapper classes
 ```java

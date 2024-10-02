@@ -1,4 +1,6 @@
 # Lecture 4 - Interfaces and Polymorphism
+
+### Interfaces
 - interfaces are for constructing contracts (between **clients** and **implementers**)
     - interfaces enable the Polymorphic principle of methods
     - interfaces sit between the client and the implementer
@@ -14,6 +16,7 @@
 
 - "contracts" (or the `interface`) specifies 
 	- which *methods* (services) that the implementer is **required to provide** to the client (for use)
+		- specify method declarations
 	- client refers to the contract to find out the services that are available
 	- one class can implement ***one or more interfaces*** (i.e. `Shape` and `Movable`)
 
