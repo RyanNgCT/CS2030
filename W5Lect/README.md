@@ -69,7 +69,7 @@ class Circle {
     protected Circle(Circle circle) {
         this.radius = circle.radius; // or this(circle.radius);
 
-		// changing prop to diameter
+		// uncomment below to change property/attribute to diameter instead
 		// this.diameter = circle.diameter
     }
     ...
@@ -95,15 +95,15 @@ class FilledCircle {
 }
 ```
 
-*side notes:* If we change the property of `radius` to` diameter` in this case, then we only need to change the `Circle` class, while `FilledCircle` (i.e. the "client" of `Circle`) does not need to have any changes
+*side note:* If we change the property of `radius` to` diameter` in this case, then we only expect that we are required to **change the `Circle` class**, while `FilledCircle` (i.e. the "client" of `Circle`) does not need to have any changes on our end (since `FilledCircle` is a client).
 ### Method Overloading
 - methods of the same name, but using different argument lists.
-- number, type and order of args matter! $\implies$ focus on that is inside the brackets.
+- **number, type and order of args matter!** $\implies$ focus on what is ***inside the brackets***.
 	- not the return type or accessibility
 	-  i.e. `toString()` versus `toString(String prompt)`
 #### Constructor Overloading
 - constructor is just a special variant of method to instantiate object
-- ensure that there are clear differences in method signature (***number of args, input type, order of arguments*** etc.) to ensure that there is no ambiguity btwn constructors so that code can compile.
+- ensure that there are clear differences in method signature (***number of args, input type, order of arguments*** etc.) to ensure that there is no ambiguity btwn constructors so that code can compile alright.
 
 #### Constructor Chaining
 - can have one constructor ***make use of another*** overloaded one by using `this()` constructor method $\implies$ using `this(circle.radius)` invokes the constructor `Circle(double radius)`.
@@ -144,7 +144,6 @@ new FilledCircle(1.0, Color.GREEN).getArea() // perfectly valid as well
 ```
  - $\therefore$ methods of `S` can be invoked by `T`  as well (i.e. `FilledCircle` can call the `getArea()` method as defined by `Circle`, which is the parent of `FilledCircle`)
 
-
 Substitutability is also present in method calling / definitions.
 ```java
 public foo(variable_t){
@@ -156,15 +155,14 @@ jshell> foo(expression_s); // expression_s is the parameter passed into method f
 // calling a method with an expression is an assignment from the parameter s to the variable t
 ```
 
-`circle.fillColor(Color.GREEN)` ❌
-
+`circle.fillColor(Color.GREEN)` ❌ (recall that `fillColor(Color clr)` is only implemented by `FilledCircle`)
 #### Liskov Substitution Principle
 - an object such as a class can replace by a sub-object (i.e. sub-class that *extends* that first class), without breaking the program.
-	- used as developers use *inheritance* concepts
+	- used when developers use *inheritance* concepts
 
 ---
 ### Compile-Time vs Run-Time type
-- have to compile Java programs before running them
+- have to compile Java programs before running them (think about the various stages carefully!)
 #### Compilation Time/Stage
 can the program compile? $\to$ important to check even before running it
 - check the types of the variables declared $\implies$ it is all about substitutability
@@ -176,7 +174,7 @@ can the program compile? $\to$ important to check even before running it
 ```java
 Circle circ = new FilledCircle(1.0, Color.BLUE)
 ```
-1. the compile-time type of the variable `circ` is `Circle` $\implies$ checks if the assignment is possible, **not doing the assignment** at this stage.
+1. the compile-time type of the variable `circ` is `Circle` $\implies$ checks if the assignment is possible, but the compiler is **not doing the assignment** at this stage.
 	1. don't even look at what is being assigned!
 	2. just check `Circle circ = ` ✅ , $\therefore$ can compile
 2. ⚠️ `circ` at this stage can call `getArea()` and `toString`, but **NOT** `fillColor()`!

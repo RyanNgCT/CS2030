@@ -153,9 +153,9 @@ To handle that after declaring the generic types, we can make the pair (first el
 ---
 ## Using generics
 Allows the PQ class to take in different class type.
-- not good to have `PQ<Integer>` and `PQ<String>` etc.
+- not good to have implementations of `PQ<Integer>` and `PQ<String>` etc. in separate files $\implies$ violates Don't Repeat Yourself!
 
-Generics allow us to input *parameterized types*, have `PQ<Integer>`, `PQ<String>`, `PQ<Shape>`, `PQ<Circle>` etc.
+Generics allow us to input *parameterized types*, have `PQ<Integer>`, `PQ<String>`, `PQ<Shape>`, `PQ<Circle>` etc. into a single "instance"
 
 > *def*: Generic type declaration is when we do `PQ<E>` or `LinkedList<E>` in a class etc.
 
@@ -271,6 +271,7 @@ abstract class Shape implements Comparable<Shape> {
 ```
 
 - ⚠️ Java Generics in its **simplest form is invariant** $\implies$ `PQ<Shape>` can only take in `List<Shape>` or `Set<Shape>` etc. but **NOT** `List<Circle>` or `List<Rectangle>` etc.
+	- have to use bounded wildcards
 #### Upper bounded Wildcard
 *Problem:* If we use generic data types, i.e. `List<Circle> cir = List.of(new Circle(...), ...)` or `PQ<Circle> = new PQ<>().add(new Circle(...)).add(new Rectangle(...))` or a collection of Shape sub-objects is not allowed
 - Enables the **PQ Generic class** to take in *anything below the Shape interface* (the class itself and its sub/child classes).
@@ -283,6 +284,7 @@ GPQ(Collection<? extends E> source) {
 ```
 - allows `PQ<Shape>` to accept both `List.of(Circle)` and `List.of(Rectangle)`
 
+`List<? extends Number> numList` $\implies$ can accept Double, Integer and Number types
 #### Lower bounded Wildcard
 *Problem:* `Circle` doesn't extend `Comparable<Circle>` i.e. does not have a parent that has `Comparable<Circle>`, so using `new PQ<Circle>(List.of(...))` **does not work**!
 - Circle only implements `Comparable<Shape>` $\implies$ lower-bounded wildcard allows `new PQ<Circle>(...)` and `new PQ<Shape>(...)` to work
@@ -358,6 +360,9 @@ GPQ(Comparator<? super E> cmp) {
 }
 ```
 
+In `Function<T, R>` the input type T is treated as the consumer, hence `? super T` and the output type is treated as a producer `? extends T`.
+
+In the 
 ### Generic methods
 - `List.of()` or `PQ.of()` is called from the class $\implies$ does not know what is E that is declared (use the `static` keyword)
 	- allows the constructor to have `private` access modifier
@@ -366,6 +371,7 @@ GPQ(Comparator<? super E> cmp) {
 - explicitly states the type to input (don't leave it to type inference)
     - `PQ.<String>of().add("1")`
     - `PQ.<Integer>of().add(2)`
+
 
 ---
 ## PA Supplementary Notes
@@ -384,6 +390,9 @@ import java.util.stream.Collectors; // technically might be banned
 // interfaces
 import java.util.Comparator;
 import java.util.Comparable;
+
+// coloured shape
+import java.awt.Color;
 ```
 
 **Pair**
@@ -396,4 +405,5 @@ Use only `private final` as `protected` attributes are not allowed unless stated
 **Constants**
 - declare as `private static final <type> CONSTANT =  ......`
 
-Rule of Thumb: If you are storing attributes or there is a requirement for `toString()`, then abstract class.
+Rule of Thumb: If you are **storing attributes** (i.e. Driver class has `licensePlate` and `waitingTime`) or there is a requirement for `toString()`, then use an abstract class.
+
