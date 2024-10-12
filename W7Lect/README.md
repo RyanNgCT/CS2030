@@ -147,6 +147,7 @@ jshell> empStr.equals(empInt)
 
 mapper is also a producer
 
+We should write all our guards in the factory methods itself.
 
 ### Flatmap
 - does not allow for `Optional.<Integer>of(1).flatMap(x -> x + 1)`
