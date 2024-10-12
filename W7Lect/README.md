@@ -1,24 +1,39 @@
 # Lecture 7 - Contexts
 ## What is a Computational Context
-- provides a service to the client (a sandbox)
-	- wraps around some value and abstracts away computations associated with the particular context
+- for every context, the pattern or thought process in creating it is the same.
+
+- Contexts provides a **service** to the client
+	- wraps around some value and **abstracts away computations** associated with the particular context
+	- sandbox that allows functions to be safely executed
+	- example: `Optional` $\implies$ context that handles invalid or missing values
 
 - only wraps around **one** value
 
-- need to test every branch of contexts
+- need to test every branch in the methods of contexts
 
-### Components
-- a way to wrap the value within the box (i.e. using the factory methods, i.e. `of`)
-- a way to pass behaviour into the box with a higher order function
+### Components of a Context
+- a way to wrap the value within the box (i.e. using the *factory methods*, i.e. `of`)
+```java
+jshell> Optional<Integer> optInt = Optional.<Integer>of(1);
+optInt ==> Optional[1]
+
+jshell> Optional<Integer> optInt = Optional.<Integer>empty();
+optInt ==> Optional.empty
+```
+
+- a way to pass behaviour into the box with a **higher order function**
+	- have the client pass in what they wish to do (i.e. `map()`, `filter()`, `reduce()`).
 
 - How does the client interact with the context $\implies$ using cross-barrier manipulation
 	- clients should be able to tell the functionality that they require
 
 ### Cross-barrier Manipulation
+Describes how a client would interact with a context
 - client passes the value to context and context manipulate on the client's behalf (doing it through the `filter()` method).
 
 ## Maybe
-- mimics optional, which is a computational context $\implies$ meant to do something for the user
+- mimics Java's optional, which is a computational context $\implies$ meant to do something for the user
+	- implements all the methods that an optional may have.
 ```java
 // type declaration
 class Maybe<T>{
@@ -26,7 +41,8 @@ class Maybe<T>{
 }
 ```
 
-- creating maybe $\implies$ don't mention the name itself?
+**Maybe** is a class that takes in values of any type (i.e. `Maybe<T>`, so it can take in `String`, `Double`, `Integer` etc.)
+- instantiating maybe $\implies$ don't mention the name itself? (i.e. ❌ `new Maybe(...)`)
 
 ```java
 // two ways to instantiating the Maybe context
@@ -34,6 +50,8 @@ Maybe.<Integer>of(1);
 Maybe.<Integer>empty();
 ```
 
+### `.of()`
+Hence we use the `of()` method
 - `of` method is a class method and is a static method
 	- Constructor should be private (use `.of` and not `new Maybe<T>(...)`)
 		- restrict situations where we don't want maybe to be created
@@ -44,8 +62,7 @@ Maybe.<Integer>empty();
 ![[Pasted image 20240930122422.png]]
 - `static<T>` indicates a generic method
 - `Maybe<T>` is the return type (maybe wrapped around type T)
-- `T value` is the params accepted by the `of` method
-
+- `T value` is the parameters accepted by the `of` method
 
 ![[Pasted image 20240930122431.png]]
 - you are making the optional empty so inside cant be empty
@@ -69,5 +86,9 @@ mapper is also a producer
 ###  Consumer
 - producer extends consumer super
 
-
+---
+## Eager versus Lazy Evaluation
 What is eager evaluation???
+
+### Effects of Lazy Evaluation
+- instead of relying on streams to provide the laziness, we want to ourselves create something (a context) that provides lazy evaluation
