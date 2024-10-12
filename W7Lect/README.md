@@ -42,35 +42,107 @@ class Maybe<T>{
 ```
 
 **Maybe** is a class that takes in values of any type (i.e. `Maybe<T>`, so it can take in `String`, `Double`, `Integer` etc.)
-- instantiating maybe $\implies$ don't mention the name itself? (i.e. ❌ `new Maybe(...)`)
+- instantiating maybe $\implies$ don't mention the name itself? (i.e. ❌ `new Maybe<T>(...)`)
+	- use the factory methods `.<T>of()` and `.<T>empty()`.
 
 ```java
-// two ways to instantiating the Maybe context
-Maybe.<Integer>of(1);
-Maybe.<Integer>empty();
+// two ways to instantiating the Maybe context (similar to Optional)
+jshell> Maybe.<Integer>of(1) // value of "1"
+$6 ==> Maybe[1]
+
+jshell> Maybe.<Integer>empty() // absence of value
+$7 ==> Maybe.empty
+
+jshell> Maybe<Integer> mayInt = Maybe.<Integer>of(1)
+mayInt ==> Maybe[1]
 ```
 
 ### `.of()`
 Hence we use the `of()` method
 - `of` method is a class method and is a static method
-	- Constructor should be private (use `.of` and not `new Maybe<T>(...)`)
+	- Constructor should be **private** (*use `.of`* or using type inference and not `new Maybe<T>(...)`)
 		- restrict situations where we don't want maybe to be created
 	- have error handling within `of` method itself $\implies$ check if value is null
 
-- static method does not have a chance to be bounded
+- static method does not have a chance for type `<T>` to be bounded
+	- just focus on the method itself
 
-![[Pasted image 20240930122422.png]]
-- `static<T>` indicates a generic method
-- `Maybe<T>` is the return type (maybe wrapped around type T)
+**Breaking down this method**:
+![factory-method-maybe-of](../assets/factory-method-maybe-of.png)
+- `static` indicates a generic method
+- `<T>` generic type declaration
+- `Maybe<T>` is the **return type** (maybe wrapped around type T)
+- method name is `of`
 - `T value` is the parameters accepted by the `of` method
 
-![[Pasted image 20240930122431.png]]
-- you are making the optional empty so inside cant be empty
-### Equals
-![[Pasted image 20240930123532.png]]
+### `empty()`
+![factory-method-maybe-empty](../assets/factory-method-maybe-empty.png)
+- you are making the **optional empty** so inside cant be empty $\implies$ allowed to fill it with null, indicating absence of a value.
 
-- `this.get()` and `other.get()` retrieves the value itself
+### `isEmpty()`
+```java
+// can be used by other functions to check if value stored is Maybe.empty
+private boolean isEmpty() {
+	return this.value == null;
+}
+```
+- should make these helper methods **with the `private` access modifier** so that client's cannot use it.
+	- only the **context itself** should be able to access them
+
+### `get()`
+```java
+private T get() {
+	return this.value;
+}
+```
+
+### `equals()`
+```java
+@Override
+public boolean equals(Object obj) {
+	if (this == obj) {
+		return true;
+	}
+	
+	if (obj instanceof Maybe<?> other) {
+		// can use the equals method after unboxing both values
+		return this.get().equals(other.get());
+	}
+	return false;
+}
+```
+
+- `this.get()` and `other.get()` retrieves the **value** stored in the Maybe itself
 - Can indicate maybe of any type using `Maybe<?>`
+
+- note that we **cannot** compare a `Maybe<Integer>` to an `int` in this case (as the `int` is not an instance of `Maybe<T>` in this case) 
+
+##### Edge Case
+- need to handle this (when comparing two empties of different types)
+```java
+jshell> Maybe<String> empStr = Maybe.<String>empty()
+empStr ==> Maybe.empty
+
+jshell> Maybe<Integer> empInt = Maybe.<Integer>empty()
+empInt ==> Maybe.empty
+
+jshell> empStr.equals(empInt)
+|  Exception java.lang.NullPointerException: Cannot invoke "Object.equals(Object)" because the return value of "REPL.$JShell$15$Maybe.get()" is null
+|        at Maybe.equals (#5:49)
+|        at (#9:1)
+```
+
+##### Resolution
+```java
+ if (obj instanceof Maybe<?> other) {
+	if (this.isEmpty() || other.isEmpty()) {
+		return this.get() == other.get();
+	}
+	
+	// can use the equals method after unboxing
+	return this.get().equals(other.get());
+}
+```
 
 
 mapper is also a producer

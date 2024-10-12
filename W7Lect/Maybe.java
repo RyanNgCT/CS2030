@@ -1,3 +1,4 @@
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -8,7 +9,6 @@ import java.util.function.Supplier;
 
 class Maybe<T> {
     // context -> to wraps around a SINGLE value
-
     private final T value;
 
     // don't need to bind the constructor
@@ -25,6 +25,7 @@ class Maybe<T> {
     }
 
     static <T> Maybe<T> empty() {
+        // null is ok here because we encapsulate it
         return new Maybe<T>(null);
     }
 
@@ -35,6 +36,25 @@ class Maybe<T> {
     private T get() {
         return this.value;
     }
+
+    // == Level 1 ==
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof Maybe<?> other) {
+            if (this.isEmpty() || other.isEmpty()) {
+                return this.get() == other.get();
+            }
+            // can use the equals method after unboxing
+            return this.get().equals(other.get());
+        }
+        return false;
+    }
+
+    // == Level 2 ==
 
     Maybe<T> filter(Predicate<? super T> pred) {
         if (this.isEmpty()) {
@@ -47,16 +67,21 @@ class Maybe<T> {
         return Maybe.<T>empty();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+    // == Level 3 ==
+
+    void ifPresent(Consumer<? super T> action) {
+        if (!this.isEmpty()) {
+            action.accept(this.get());
         }
-        if (obj instanceof Maybe<?> other) {
-            // can use the equals method after unboxing
-            this.get().equals(other.get());
+    }
+
+    void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction) {
+        if (this.isEmpty()) {
+            emptyAction.run();
+            return;
         }
-        return false;
+        action.accept(this.get());
+        return;
     }
 
     <R> Maybe<R> map(Function<? super T, ? extends R> mapper) {
@@ -68,25 +93,24 @@ class Maybe<T> {
         return Maybe.<R>of(ret);
     }
 
-    <R> Maybe<R> flatMap(Function<? super T, ? extends Optional<R>> mapper) {
-
+    <R> Maybe<R> flatMap(Function<? super T, ? extends Maybe<R>> mapper) {
         // to implement
         return null;
     }
 
-    T orElse(T other) {
-        if (this.isEmpty()) {
-            return this;
-        }
-        return this.get();
-    }
+    // T orElse(T other) {
+    //     if (this.isEmpty()) {
+    //         return this;
+    //     }
+    //     return this.get();
+    // }
 
-    T orElseGet(Supplier<? extends T> supplier) {
-        if (this.isEmpty()) {
-            return this;
-        }
-        return supplier.get();
-    }
+    // T orElseGet(Supplier<? extends T> supplier) {
+    //     if (this.isEmpty()) {
+    //         return this;
+    //     }
+    //     return supplier.get();
+    // }
 
     @Override
     public String toString() {
