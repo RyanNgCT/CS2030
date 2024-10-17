@@ -56,6 +56,7 @@ class Maybe<T> {
 
     // == Level 2 ==
 
+    // predicate is a consumer in this case.
     Maybe<T> filter(Predicate<? super T> pred) {
         if (this.isEmpty()) {
             return this;    // no need to filter anymore
@@ -126,7 +127,9 @@ class Maybe<T> {
         // Maybe<? extends R> maybeRVal = mapper.apply(this.get());
         // return Maybe.<R>of(maybeRVal.get());
 
-        return mapper.apply(this.get()).map(value -> value);
+        return mapper.apply(this.get())
+            .map(
+                value -> value);    // can be replaced with an identity function
     }
 
     @Override

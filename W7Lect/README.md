@@ -1,18 +1,21 @@
 # Lecture 7 - Contexts
 ## What is a Computational Context
-- for every context, the pattern or thought process in creating it is the same.
-
+- for every context, the pattern or **thought process** in creating it is the **same**.
+### Motivation
 - Contexts provides a **service** to the client
 	- wraps around some value and **abstracts away computations** associated with the particular context
 	- sandbox that allows functions to be safely executed
-	- example: `Optional` $\implies$ context that handles invalid or missing values
+
+### Examples: 
+- `Optional` $\implies$ context that handles invalid or missing values
+- `Stream` $\implies$ handles "looping" for the client
 
 - only wraps around **one** value
 
 - need to test every branch in the methods of contexts
 
 ### Components of a Context
-- a way to wrap the value within the box (i.e. using the *factory methods*, i.e. `of`)
+- a **way** to *wrap the value* within the box (i.e. using the *factory methods*, i.e. `of` and `empty` methods)
 ```java
 jshell> Optional<Integer> optInt = Optional.<Integer>of(1);
 optInt ==> Optional[1]
@@ -21,7 +24,7 @@ jshell> Optional<Integer> optInt = Optional.<Integer>empty();
 optInt ==> Optional.empty
 ```
 
-- a way to pass behaviour into the box with a **higher order function**
+- a way to pass behaviour into the box with a **higher order functions** (method that take in other methods)
 	- have the client pass in what they wish to do (i.e. `map()`, `filter()`, `reduce()`).
 
 - How does the client interact with the context $\implies$ using cross-barrier manipulation
@@ -31,9 +34,11 @@ optInt ==> Optional.empty
 Describes how a client would interact with a context
 - client passes the value to context and context manipulate on the client's behalf (doing it through the `filter()` method).
 
-## Maybe
+## The `Maybe` Context
+- enables one to handle `null` or the absence of values
 - mimics Java's optional, which is a computational context $\implies$ meant to do something for the user
-	- implements all the methods that an optional may have.
+	- implements all the methods that an optional may have
+
 ```java
 // type declaration
 class Maybe<T>{
@@ -41,7 +46,7 @@ class Maybe<T>{
 }
 ```
 
-**Maybe** is a class that takes in values of any type (i.e. `Maybe<T>`, so it can take in `String`, `Double`, `Integer` etc.)
+**Maybe** is a class that takes in values of any type, or a **generic type** (i.e. `Maybe<T>`, so it can take in `String`, `Double`, `Integer` etc.) 
 - instantiating maybe $\implies$ don't mention the name itself? (i.e. ❌ `new Maybe<T>(...)`)
 	- use the factory methods `.<T>of()` and `.<T>empty()`.
 
@@ -57,6 +62,20 @@ jshell> Maybe<Integer> mayInt = Maybe.<Integer>of(1)
 mayInt ==> Maybe[1]
 ```
 
+- property in the `Maybe` class is of type `T`, since we accept multiple "variable types"
+
+### The constructor
+- we don't have to do type binding, only for this constructor method
+	- takes in a `T value`
+	- we need the constructor should be private (i.e. cannot be called from the client directly view `new Maybe<T>(...)`)
+
+```java
+// don't need to bind the constructor to T type
+private Maybe(T value) {
+	this.value = value;
+}
+```
+
 ### `.of()`
 Hence we use the `of()` method
 - `of` method is a class method and is a static method
@@ -69,15 +88,35 @@ Hence we use the `of()` method
 
 **Breaking down this method**:
 ![factory-method-maybe-of](../assets/factory-method-maybe-of.png)
-- `static` indicates a generic method
-- `<T>` generic type declaration
+- `static` indicates a static method that can be called without instantiating the `Maybe` object
+- `<T>` generic type declaration (have to re-declare type `T`)
 - `Maybe<T>` is the **return type** (maybe wrapped around type T)
 - method name is `of`
 - `T value` is the parameters accepted by the `of` method
 
+#### Why do we want to use `.of` and not expose the constructor?
+- We should write all our guards in the factory methods itself
+	- factory method offers us a place to guard against creation (not in the constructor itself).
+- We could also have instances where we don't want `Maybe` to be created
+- We also don't want the client to use `new Maybe...`
+	```java
+	static <T> Maybe<T> of(T value) {
+		// enable handling of the case where client enters Maybe.<Integer>of(null);
+		if (value == null) {
+			throw new NullPointerException();
+		}
+		return new Maybe<T>(value);
+    }
+	```
+
 ### `empty()`
 ![factory-method-maybe-empty](../assets/factory-method-maybe-empty.png)
-- you are making the **optional empty** so inside cant be empty $\implies$ allowed to fill it with null, indicating absence of a value.
+- you are making the **optional empty** so inside cant be empty $\implies$ **allowed to fill** it with null, indicating absence of a value.
+
+### `toString()`
+- this method will return **one** of two possible things
+	- if the Maybe is empty, prints out `Maybe.empty` (mimic `Optional.empty`'s behaviour)
+	- if there is a value, return the value itself
 
 ### `isEmpty()`
 ```java
@@ -96,10 +135,11 @@ private T get() {
 }
 ```
 
-### `equals()`
+### `equals()` -- for comparing objects
 ```java
 @Override
 public boolean equals(Object obj) {
+	// micmic what Object.equals does
 	if (this == obj) {
 		return true;
 	}
@@ -111,11 +151,19 @@ public boolean equals(Object obj) {
 	return false;
 }
 ```
+- good practice to include the decorator `@Override`
 
-- `this.get()` and `other.get()` retrieves the **value** stored in the Maybe itself
-- Can indicate maybe of any type using `Maybe<?>`
+- `this.get()` and `other.get()` retrieves the **value** stored in the Maybe context itself (i.e. taking the value out of the box)
+
+- Can indicate Maybe of **any type** using `Maybe<?>`
+	- guaranteed to be able to use `Object.equals()` to compare the values inside
 
 - note that we **cannot** compare a `Maybe<Integer>` to an `int` in this case (as the `int` is not an instance of `Maybe<T>` in this case) 
+
+##### Considerations
+When comparing equality between two `Maybe` values, do we need to consider:
+1. Type of the Wrapped value
+2. If one or both of the `Maybe`s is/are empty?
 
 ##### Edge Case
 - need to handle this (when comparing two empties of different types)
@@ -135,6 +183,7 @@ jshell> empStr.equals(empInt)
 ##### Resolution
 ```java
  if (obj instanceof Maybe<?> other) {
+	// catch case where either one might be Maybe.<T>empty()
 	if (this.isEmpty() || other.isEmpty()) {
 		return this.get() == other.get();
 	}
@@ -144,19 +193,81 @@ jshell> empStr.equals(empInt)
 }
 ```
 
+---
+### Higher Order Methods in `Maybe`
+- these are methods that take in various implementations of functional interfaces
+	- `filter()` $\implies$ takes in `Predicate` (abstract method `test()`)
+	- `ifPresent()`$\implies$takes in  `Consumer` (abstract method `accept()`)
+	- `map()` $\implies$ takes in `Function` (abstract method `apply()`)
+	- `flatMap()` $\implies$ takes in `Function`
 
-mapper is also a producer
+- These HOFs enable cross-barrier manipulation
+	- functionality of manipulation is passed to the context / implementors to manipulate on the client's behalf
 
-We should write all our guards in the factory methods itself.
+### `filter()`
+- takes in a predicate (need to import!)
+	- nothing inside (i.e. `Maybe.empty()`), nothing to filter
+	- something inside, test if each one returns true (then return itself), otherwise don't let it through
+- returns a `Maybe<T>` $\implies$ return `Maybe` with a value or an Empty `Maybe`
 
-### Flatmap
+```java
+// ? super T to receive things above Predicate<T> i.e. Predicate<Object>
+Maybe<T> filter(Predicate<? super T> pred){
+	if (this.isEmpty){
+		return this;
+	}
+	if (pred.test(this.get())){
+		return this;
+	}
+	return Maybe.<T>empty(); // or return new Maybe<T>(null);
+}
+```
+
+```java
+jshell> Predicate<Object> po = x -> x.hashCode() == 1;
+po ==> $Lambda/0x000001c2c100a648@5ce81285
+
+jshell> Integer i = 1;
+i ==> 1
+
+jshell> i.hashCode();
+$8 ==> 1
+
+jshell> Maybe.<Integer>of(1).filter(po); // can accept and filter by Predicate<Object>
+$9 ==> Maybe[1] 
+```
+
+### `map()`
+- takes in a function with input `T`
+	- check if the mapper is empty
+- it returns anything (need not be a `T`)
+
+```java
+<R> Maybe<R> map(Function<? super T, ? extends R> mapper)
+```
+- `<R>` is declared in the method scope as a type parameter
+- `Maybe<R>` is returned
+
+```java
+if (this.isEmpty()) {
+	return Maybe.<R>empty(); // cannot just return this (of type Maybe<T>)
+}
+...
+return Maybe.<R>of(ret);
+```
+- return `Maybe.<R>...(...)` to wrap the value
+
+
+- Mapper is a producer, as well as a consumer
+
+#### Flatmap
 - does not allow for `Optional.<Integer>of(1).flatMap(x -> x + 1)`
 - lambda function in flatMap itself must have the same type as the one we started with
 
-### Supplier
+#### Supplier
 - supplier provides us with lazy evaluation (i.e. Streams)
 
-###  Consumer
+####  Consumer
 - producer extends consumer super
 
 ---
