@@ -240,6 +240,7 @@ $9 ==> Maybe[1]
 ### `map()`
 - takes in a function with input `T`
 	- check if the mapper is empty
+	- apply the mapper on the target if not empty and return the wrapped value of the one *produced by mapper*
 - it returns anything (need not be a `T`)
 
 ```java
@@ -257,22 +258,140 @@ return Maybe.<R>of(ret);
 ```
 - return `Maybe.<R>...(...)` to wrap the value
 
+- Mapper is a producer (at the output part), as well as a consumer
+	- need to use bounded wildcards to facilitate generality of the `map()` function
 
-- Mapper is a producer, as well as a consumer
+### `flatMap()`
+- does not allow for `Optional.<Integer>of(1).flatMap(x -> x + 1)` $\implies$not admissible as the outcome has to be the **same context**
+```java
+Optional.<Integer>of(1).flatMap(x -> Optional.of(x + 1)) // ✅
+```
 
-#### Flatmap
-- does not allow for `Optional.<Integer>of(1).flatMap(x -> x + 1)`
-- lambda function in flatMap itself must have the same type as the one we started with
+- lambda function in `flatMap()` itself must have the same type as the one we started with
 
-#### Supplier
-- supplier provides us with lazy evaluation (i.e. Streams)
+#### The generality of `flatMap()`
+We start out with this general method signature, which is similar to `map()`, but the return type inside the function itself would be an `Optional<R>`.
+```java
+import java.util.function.Function;
+...
 
-####  Consumer
+<R> Maybe<R> flatMap(Function <? super T, ? extends Optional<R>> mapper){
+...
+}
+```
+
+Consider this situation:
+```java
+// admissible
+jshell> List<Maybe<Integer>> listMI = List.of(Maybe.<Integer>of(1))
+listMI ==> [Maybe[1]]
+
+// also admissible
+jshell> Maybe<Integer> mi = Maybe.<Integer>of(1)
+mi ==> Maybe[1]
+
+// cannot assign a Maybe<Integer> to a Maybe<Number> due to invariance
+jshell> Maybe<Number> mn = mi
+|  Error:
+|  incompatible types: Maybe<java.lang.Integer> cannot be converted to Maybe<java.lang.Number>
+|  Maybe<Number> mn = mi;
+|                     ^^
+
+// admissible using Upper-bounded wildcards
+jshell> Maybe<? extends Number> mn = mi
+mn ==> Maybe[1]
+
+// inadmissible again because of invariance
+jshell> List<Maybe<Number>> lmn = listMI
+|  Error:
+|  incompatible types: java.util.List<Maybe<java.lang.Integer>> cannot be converted to java.util.List<Maybe<java.lang.Number>>
+|  List<Maybe<Number>> lmn = listMI;
+|                            ^----^
+
+// need to use upper-bounded wildcard in both to be substitutable.
+jshell> List<? extends Maybe<? extends Number>> lmn = listMI
+lmn ==> [Maybe[1]]
+```
+- `List<? extends Maybe<? extends Number>> lmn = ...`
+	- every level of invariance needs to be resolved, hence we need to have something like this.
+
+Thus, the appropriate method signature should look something like:
+- to resolve both levels of invariances.
+```java
+<R> Maybe<R> flatMap(Function <? super T, ? extends Optional<? extends R>> mapper){
+...
+}
+```
+
+### `orElse()`
+- returns a `T` type
+- returns another "other" value as passed into the method itself
+```java
+T orElse(T other) {
+	if (this.isEmpty()) {
+		return other;
+	}
+	return this.get();
+}
+```
+
+### `orElseGet()` and the Supplier
+```java
+T orElseGet(Supplier<? extends T> supplier) {
+	if (this.isEmpty()) {
+		return supplier.get();
+	}
+	return this.get();
+}
+```
+- supplier provides us with lazy evaluation (i.e. Streams) $\implies$ is a producer so use `? extends T`
+
+###  Consumer (not mentioned here)
 - producer extends consumer super
 
 ---
 ## Eager versus Lazy Evaluation
-What is eager evaluation???
+### What is eager evaluation?
+Example:
+- We have the `orElse()` method defined in the `Maybe<T>` class as above
+- We create a method `foo()` and use an internal print to track execution
+
+```java
+jshell> Maybe.<Integer>empty().orElse(-1)
+$10 ==> -1
+
+jshell> int foo() {
+   ...>     System.out.println("foo executed");
+   ...>     return -1;
+   ...> }
+|  created method foo()
+
+jshell> Maybe.<Integer>empty().orElse(foo())
+foo executed
+$12 ==> -1
+
+jshell> Maybe.<Integer>of(1).orElse(foo()) // unexpected
+foo executed
+$13 ==> 1
+```
+- Unfortunately, `foo()` is executed when we pass in a `Maybe.<Integer>of(1)`. This is because `foo()` was eagerly evaluated and its return value is passed `orElse()` for the statement to be processed.
+	- We know that there are situations where `orElse()` **should not be executed**
+	- To resolve this, we wrap the function call in a supplier, which leads us to the `orElseGet()` method
+
+### `orElseGet()`
+
+```java
+jshell> Maybe.<Integer>of(10).orElseGet(sup)
+$19 ==> 10
+
+jshell> Maybe.<Integer>of(10).orElseGet(() -> foo())
+$20 ==> 10
+
+jshell> Maybe.<Integer>empty().orElseGet(sup)
+foo executed
+$17 ==> -1
+```
+
 
 ### Effects of Lazy Evaluation
 - instead of relying on streams to provide the laziness, we want to ourselves create something (a context) that provides lazy evaluation
