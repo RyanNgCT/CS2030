@@ -344,7 +344,7 @@ T orElseGet(Supplier<? extends T> supplier) {
 	return this.get();
 }
 ```
-- supplier provides us with lazy evaluation (i.e. Streams) $\implies$ is a producer so use `? extends T`
+- supplier provides us with lazy evaluation (i.e. Streams) $\implies$ it is a producer so we use `? extends T`
 
 ###  Consumer (not mentioned here)
 - producer extends consumer super
@@ -391,7 +391,6 @@ jshell> Maybe.<Integer>empty().orElseGet(sup)
 foo executed
 $17 ==> -1
 ```
-
 
 ### Effects of Lazy Evaluation
 - instead of relying on streams to provide the laziness, we want to ourselves create something (a context) that provides lazy evaluation

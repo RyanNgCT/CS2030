@@ -19,9 +19,10 @@ i.e. `x -> x | y` (for y $\ne$ 0)
 
 ### Pure Functions
 - takes in argument(s) and returns a *deterministic value* **every time** $\implies$ repetition has **no effect** on the output being different
+	- return value is the same for the same set of values that it takes in
 	- PRNGs are non-deterministic since they output different values each time
 
-- must be **effect** free (i.e. running the function does not change anything outside of it)
+- must be **side-effect** free (i.e. running the function does not change anything outside of it). Some side effects include:
 	- modifying *external state*
 	- program input/output (rather the practice is to collect all the outputs via `toString()`)
 	- throwing exceptions (refer to Week 9 Lecture) $\implies$ is a type of side-effect
@@ -139,9 +140,9 @@ $15 ==> 80
 - functions to deal with having *multiple arguments* (which can have multiple nested functions within)
 - no need for tri- or quad-functions since we can utilize function currying
 	- can use `f.apply(1).apply("string")`
-		- `f.apply(1)` is called a *partial application*, while `f.apply(1).apply("2")` will "run" the full function. 
+		- `f.apply(1)` is called a *partial application*, while `f.apply(1).apply("2")` will "run" all the things within the intended outer function
 
-- piggy-bagging arguments
+- "piggy-bagging" arguments
 	- one of the arguments is a function
 
 ```java
@@ -166,15 +167,16 @@ $5 ==> 15
 
 - Writing the types is cumbersome, otherwise currying is a neat way to take in functions as arguments.
 
-### Partial Application - under the hood
-- can create functions using the anonymous inner class way (the inner class is an implementation of the Function interface)
+#### Curried Functions / Partial Application - under the hood
+- can create functions (specifically HOFs) using the *anonymous inner class way* or using *lambdas* (the inner class is an implementation of the Function interface)
 
-The lambda method
+The lambda method is as follows
 ```java
 f = x -> y -> x + y;
 ```
 
-The anonymous inner class method
+and its corresponding anonymous inner class method:
+- needs to have the `apply()` abstract method since it is an implementation of the `Function<T, R>` interface $\implies$ **returns a `Function<Integer, Integer>`** (i.e. the return type)
 ```java
 Function<Integer, Function<Integer,Integer>> f = new Function<>() {
 	@Override
@@ -182,7 +184,9 @@ Function<Integer, Function<Integer,Integer>> f = new Function<>() {
 	
 		return new Function<Integer,Integer>() {
 			@Override
-			// the inner class has its own apply method
+			 
+			// the inner class has its own apply method -> takes in integer,
+			// gives out another integer
 			public Integer apply(Integer y) {
 				return x + y;
 			}
@@ -191,7 +195,6 @@ Function<Integer, Function<Integer,Integer>> f = new Function<>() {
 }
 ```
 
-- need to have the apply method since it is an implementation of the `Function<T, R>` interface $\implies$ implementation of the abstract method `.apply()`
 
 ```java
 func = x -> y -> x + y
@@ -202,7 +205,8 @@ func = x -> y -> x + y
 	- the `x` is kind of "crossing boundaries", it is defined in the outer function but crosses into the inner function
 		- `x` is defined in the scope of the outer `apply()` function, but used in the inner `apply()` function itself.
 
-- the outer function declared with `new Function<>(){...}` is an instance of a local class
+- the outer function declared with `f = new Function<>(){...}` is an instance of a local class
+	- we are instantiating a local class that implements the Function interface
 
 ### Closures
 > *def:* An instance of a local class is returned as a **closure** (is nothing more than an **object** in the realm of functional programming)
@@ -217,6 +221,7 @@ class A {
         this.z = z;
     }
 
+	// this is the local class
     Predicate<Integer> foo(int y) {
         // is the same as writing "return x -> x == y + z;"
         return new Predicate<Integer>() {
@@ -229,21 +234,29 @@ class A {
 }
 ```
 
+```java
+Predicate<Integer> pred = new A(1).foo(2);
+```
+
 `Predicate.test()` enclosed within Predicate method `foo()`, the expression `x == y + z`
 - knows the variables of its enclosing method (i.e. `y`)
 
 `Predicate.test()` enclosed within class `A`, the expression `x == y + z`
 - knows the properties of the enclosing class (i.e. `this.z`)
 
+The expression  `x == y + z`is closed on its enclosing methods and the "stuff" in its enclosing stuff (typically only the variables)
+
 ```java
 x -> x = y + z // from where one???
 ```
 - `y` and `z` are determined by methods or classes *enclosing the local class*
-	- obtained from external constructs (i.e. was already set somewhere)
+	- obtained from external constructs (i.e. was already set somewhere else, which may not be known)
+
+- we have moved away from standalone lambdas to lambdas which depend on certain values
 
 - may be good to have anonymous inner classes (allows one to see where the variables have come from)
 ### Variable Capture
-- in order for the y value to be known, the local class has to make a copy of the value `y` (i.e. variables of the enclosing method)
+- in order for the `y` value to be known, the local class has to make a copy of the value `y` (i.e. variables of the enclosing method)
 
 - captures the reference of the enclosing class
 	- value of `y` is captured
@@ -251,28 +264,96 @@ x -> x = y + z // from where one???
 Predicate p1 = new A(1).foo(2)
 ```
 
-The reference is called `A.this()` $\implies$ using a qualified list (i.e. to reference the `z` initialized in class A, we use `A.this.z`).
+- The reference is called `A.this()` $\implies$ using a qualified list (i.e. to reference the `z` initialized in class A, we use `A.this.z`).
+	- this is particularly useful when writing anonymous inner classes
 
-- Java only allows local classes to capture variables that are explicitly declared as `final` or effectively final
+- Java only allows local classes to capture variables that are **explicitly declared as `final` or effectively final**
 	- cannot change the variable's value elsewhere (see Recitation)
 
 ## Composing Functions
 - using the `compose()` method
-- alternative composition that is more natural using `andThen()`
-	- apply through `f` first, `andThen(g)`
+	- $g \circ f \: \to$ `g.compose(f).apply(...)` [doing g first then doing f]
+- alternative composition that is **more natural** using `andThen()` $\implies$ don't need to worry which one comes first
+	- apply through `f` first, `andThen(g)` $\to$ `f.andThen(g).apply(...)`
 
 - there are defined methods in the interface (Java interfaces are impure)
 	- using `default` $\implies$ legacy compatibility issues
 
-### Under the Hood: Composition
-What actually happens to compose and how do we define it?
-- function needs to be an abstract class
+- somewhat similar to how streams can be "chained together" to form a pipeline
 
+### Under the Hood: Composition of Functions
+What actually happens to compose and how do we define the `compose()` method?
+- function needs to be an **abstract** class $\implies$ because we don't want to write default methods
+
+```java
+jshell> abstract class Func {
+   ...>     abstract int apply(int x);
+   ...> }
+|  created class Func
+
+jshell> Func f = new Func() {
+   ...>     int apply(int x) {
+   ...>         return x + 2;
+   ...>     }
+   ...> }
+f ==> 1@6d7b4f4c
+
+jshell> Func g = new Func() {
+   ...>     int apply(int x) {
+   ...>         return x * 2;
+   ...>     }
+   ...> }
+g ==> 1@3108bc
+
+jshell>
+```
+
+We then modify `Func` to be the following:
 ![func-compose-imp](../assets/function-compose-imp.png)
-
 - need to use `Func.this.apply()` to access the `abstract int apply()`
+```java
+jshell> f.compose(g)
+$6 ==> Func$1@5abca1e0
 
+jshell> f.compose(g).apply(2)
+$7 ==> 6
+```
 
+We need the closure with all the appropriate variable captures for composition to be successful.
+
+The `andThen()` implementation looks quite similar to compose, just the ordering of which operation we do first (i.e. the `.apply()` method)
+
+```java
+Func andThen(Func other) {
+
+	return new Func() {
+		int apply(int x){
+		int res = Func.this.apply(x);
+			return other.apply(res);
+		}
+	};
+}
+```
+
+After changing the class to accept generics:
+```java
+jshell> Func<Integer, Integer> f = new Func<Integer, Integer>() {
+   ...>     Integer apply(Integer x) {
+   ...>         return x + 2;
+   ...>     }
+   ...> }
+f ==> 1@c8c12ac
+
+jshell> Func<Integer, Integer> g = new Func<Integer, Integer>() {
+   ...>     Integer apply(Integer x) {
+   ...>         return x * 2;
+   ...>     }
+   ...> }
+g ==> 1@223191a6
+
+jshell> g.andThen(f).apply(2)
+$24 ==> 6
+```
 ### Lazy Evaluation with Function Composition
 - Streams itself is lazily evaluated (but we can use methods to force out the value) $\implies$ terminal operator forces out the value
 	- `reduce()` enables one to obtain the result???

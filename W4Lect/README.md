@@ -194,6 +194,7 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 
 	![stream_api](../assets/stream_api.png)
 
+- are interfaces that we can use to declare lambda types
 #### Types of Functional Interfaces
 1. **Primitive Functional Interfaces**
 	1. interfaces whose type is fixed (i.e. `IntPredicate`)
