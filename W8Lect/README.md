@@ -356,13 +356,40 @@ $24 ==> 6
 ```
 ### Lazy Evaluation with Function Composition
 - Streams itself is lazily evaluated (but we can use methods to force out the value) $\implies$ terminal operator forces out the value
-	- `reduce()` enables one to obtain the result???
+	- `reduce()` or other **terminal operations** allows for the **stream to be evaluated** and enables one to obtain the result
 	- using `apply()` also enables the function to be evaluated
 
 - function composition is associative
 
+#### Delayed Applications
+Study the stream pipeline below:
+```java
+jshell> Stream.<String>of("one", "two", "three").
+   ...> map(x -> x.length()).
+   ...> reduce(0, (x, y) -> x + y)
+$1 ==> 11
+```
 
-**What should we do?**
+- to compose functions for *delayed applications*, we need to:
+	1. `map()` each string `x` to `Function<Integer, Integer>`
+	2. perform a reduction using reduce with an identity function of the type `Function<Integer, Integer>`
+
+```java
+jshell> Function<String, Function<Integer, Integer>> mapper = x -> y -> x.length() + y
+mapper ==> $Lambda/0x000001928300a878@5383967b
+
+jshell> Function<Integer, Integer> delayed = Stream.<String>of("one", "two", "three").
+   ...> map(mapper).
+   ...> reduce(Function.<Integer>identity(), (x, y) -> x.andThen(y))
+delayed ==> java.util.function.Function$$Lambda/0x000001928305b058@2286778
+
+jshell> delayed.apply(0)
+$4 ==> 11
+```
+- in this case, we employ lazy evaluation of the method / lambda called `delayed`.
+
+**What should we do in this case?**
+- we should map `x` to a function that can assist with addition later on
 ```java
 jshell> Stream.<String>of("one", "two", "three").
    ...> map(x -> x.length())
