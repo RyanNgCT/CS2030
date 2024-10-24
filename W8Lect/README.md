@@ -421,7 +421,7 @@ $3 ==> java.util.stream.ReferencePipeline$3@5383967b
 *i.e. `x -> x`* (but can't do like this because cannot reconcile types)
 - alternative way is to use an identity method
 
-![[Pasted image 20241007132928.png]]
+![function-composition-methods](../assets/function-composition-methods.png)
 
 ### Reduction with Function Composition
 - can make use of reduction to compose function (which don't need to be in order $\implies$ associativity of function composition)

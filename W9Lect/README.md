@@ -111,45 +111,86 @@ We run the `Main.java` as "`java Main data.in`"
 ### Runtime exceptions
 - compiler doesn't check for these, so will only surface upon running the program
 ### try-catch
+- `try` can be thought of as a sandbox context for exception handling
 - allows us to **separate the main business logic** from the exception handling ( so that don't have to use lots of `if-else`s or conditionals to look out for edge cases and exceptions / the bombs)
-- the code in the `try` catch is called the  ???
 
 ## Handling Exceptions
+### Method 1: `throws` the exception out of the method
+- As much as possible, try **not** to throw the exception out of the method
+- using the following:
+```java
+public static void main(String[] args) throws FileNotFoundException { ... }
+```
+
+### Method 2: Handle the exception within the method
+- the preferred way, so that clients will continue using the application
+
 - missing data / data format not correct $\implies$ will be caught by `NoSuchElement` but not `InputMismatchException` if `NoSuchElement` precedes the latter
 	![InputMismatchException_precedence](../assets/InputMismatchException_precedence.png)
 
 - We need to catch specific Exceptions first (make sure we don't have a more general exception / parent exception class that covers the more specific one)
 
-As much as possible, try **not** to throw the exception out of the method
-
-- use the `or` operator to combine the exceptions together
-	- `catch (FileNotFoundException | ArrayIndexOutOfBoundsException ex)
-
+---
+## Throwing Exceptions (not catching exception)
+- explicitly **creating the exception**, using the `throw` keyword
 ### `throw` versus `throws`
-- `throws` $\implies$ take the exception and throw it out (in the main method itself)
+- `throws` $\implies$ take the exception and throw it out / handle  it
 - `throw` $\implies$ otherwise (other than this case)
 
-- try to use an existing exception rather than create a new one
+### Useful exceptions
+- if the arguments of a method are not right, we can throw the `IllegalArgumentException` (i.e. a form of input handling / validation of sorts)
+
+	![IllegalArgumentException](../assets/IllegalArgumentException.png)
+
+- we also can use the `IllegalStateException` when we are not supposed to have Objects be in a certain state
+
+	![IllegalStateException](../assets/IllegalStateException.png)
+
+- try to use an existing exception rather than create a new one (from the *Java 21 API*)
+	- can create one's own exception method if required(but in rare cases)
+```java
+class IllegalAnimalException extends IllegalArgumentException {
+	IllegalAnimalException(String message) {
+		super(message);
+	}
+
+	...
+
+	@Override
+	public String toString() {
+		return "IllegalAnimalException: " + getMessage();
+	}
+}
+```
+
+### Exception versus Normal Control Flow
+The diagram below looks at normal behaviour (which is expected, but requires checks), versus one with exceptions.
 
 ![Normal-Exception-Flow](../assets/Normal-Exception-Flow.png)
 
-- Exception is just thrown, and breaks program flow.
+- Exception is just thrown, and **breaks the program flow**.
 
+- use the **logical `or` operator** or pipe (i.e. $| \:$) to combine the exceptions together
+	- `catch (FileNotFoundException | ArrayIndexOutOfBoundsException ex)
 
 ### Types of Exceptions
 1. Checked exception
-	1. should be caught or propagated using the `throw` keyword
-2. Unchecked exception
-	1. Runtime Exceptions, unexpected
+	1. should be caught using `catch` or propagated using the `throw` keyword
+	2. the compiler requires **explicit handling** or throwing.
+	3. i.e. `FileNotFoundException`
+	
+2. Unchecked exception (the more usual one)
+	1. Runtime Exceptions, which are unexpected
+	2. Usually a result of a bug in the program
+		1. i.e. `ArithmeticException` $\implies$ division by zero
 
-When overriding a method that throws a checked exception, the overriding method cannot throw a more general exception.
-- should not use `throw` in place of `return` in methods(returning one value type instead of different context types of Exception)
-
-
-The overriding method cannot be more generic type than the one being overriden
+When overriding a method that throws a checked exception, the overriding method **cannot throw a more general exception**.
+- should **not** use `throw` in place of `return` in methods (returning one value type instead of different context types of Exception) $\implies$ we should **NOT** expect a function to return different types (go back to properties of a function or 1:1 mapping)
+- goes back to Liskov's Substitution Principle (for exception handling)
+	- The overriding method cannot be more general (or in this case, cannot throw an exception that is more general) than the one being overriden
 
 - catch separate exceptions using specific contexts, don't catch them all!
-	- Pokemon exception handling is bad.
+	- Pokemon exception handling is **bad**.
 
 - the place you create the bomb is the place you catch it (i.e. throw and catch should be within the same method)
 
