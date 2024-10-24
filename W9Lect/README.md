@@ -1,7 +1,7 @@
-# Week 9 Lecture
+# Week 9 Lecture -- Exception Handling & Functor and Monad Laws
 ## Try Context
 - similar to an Optional or a "Maybe" context
-- intended for the purpose of exception handling
+- intended for the purpose of **exception handling**
 
 ## Imports
 - `FileNotFoundException` must be explicitly managed
@@ -10,16 +10,56 @@
 	
 - when give a bomb, we should elegantly diffuse it
 
+## Motivation for Exception Handling
+In *Level 5 of Lab04*, we have used `new Scanner()` to read input
+```java
+import java.util.Scanner;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in); // operating on std input stream
+
+        int numLines = sc.nextInt();
+        Roster rst = new Roster("AY24/25");
+        ...
+    }
+}
+```
+
+In this instance, we will use `FileReader` to **read the file**
+```java
+public static void main(String[] args) {
+    FileReader file = new FileReader(args[0]);
+    List<Point> points =
+        new Scanner(file)
+            .useDelimiter("\n")
+            .tokens()    // Stream<String>
+            .map(str -> new Scanner(str))
+            .map(sc -> new Point(sc.nextDouble(), sc.nextDouble()))
+            .toList();
+	...
+}
+```
+
 ### Ways to handle `FileNotFoundException`
+- `FileReader` requires us to **explicitly manage exceptions**
+	![filereader](../assets/filereader.png)
+
 - identify the exception surfaces ("Where in the code where the bomb might show up?")
-	- We identify that `FileReader` exists below the `static void main()`
+	- We identify that **`FileReader`** exists below the `static void main()`
 	- We state that `static void main() throws FileNotFoundException`
+
+- `FileNotFoundException` is an object, which we can name
 
 - the errors can potentially be caught using the `catch` keyword
 	- have to **catch specific exceptions** 
 
+We have resolved some of the exceptions by catching them.
+- we also use `finally{ ... }` to do housekeeping
 ```java
 // imports
+import java.io.FileReader;
+import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.lang.ArrayIndexOutOfBoundsException;
 import java.util.InputMismatchException;
@@ -41,19 +81,23 @@ class Main {
             System.out.println(maxCoverage);
 		}
 		catch (FileNotFoundException ex){
+			// using stderr
 			System.err.println("File Not Found!");
 		}
 		catch (ArrayIndexOutOfBoundsException ex){
 			System.err.println("Missing Filename");
 		}
+	
+		// types of input is not what was expected
 		catch (InputMismatchException ex){
 		System.err.println("Input is not a number");
 		}
+		
 		catch (NoSuchElementException ex){
 			System.err.println("No element");
 		}
 	
-		// do something else (will always happen)
+		// do something else (will always happen rgdless of exception)
 		finally {
 			System.out.println("Finish");
 		}
@@ -62,16 +106,21 @@ class Main {
 ```
 
 We run the `Main.java` as "`java Main data.in`"
-- with `data.in` file as an argument
+- with `data.in` file as a required argument
 
+### Runtime exceptions
+- compiler doesn't check for these, so will only surface upon running the program
 ### try-catch
-- allows us to separate the main business logic from the exception handling (don't have to use lots of `if`s to look out for edge cases and exceptions)
+- allows us to **separate the main business logic** from the exception handling ( so that don't have to use lots of `if-else`s or conditionals to look out for edge cases and exceptions / the bombs)
 - the code in the `try` catch is called the  ???
 
 ## Handling Exceptions
-- missing data / data format not correct $\implies$ will be caught by `NoSuchElement` but not `InputMismatchException`
+- missing data / data format not correct $\implies$ will be caught by `NoSuchElement` but not `InputMismatchException` if `NoSuchElement` precedes the latter
+	![InputMismatchException_precedence](../assets/InputMismatchException_precedence.png)
 
-As much as possible, try not to throw the exception out of the method
+- We need to catch specific Exceptions first (make sure we don't have a more general exception / parent exception class that covers the more specific one)
+
+As much as possible, try **not** to throw the exception out of the method
 
 - use the `or` operator to combine the exceptions together
 	- `catch (FileNotFoundException | ArrayIndexOutOfBoundsException ex)
@@ -106,14 +155,13 @@ The overriding method cannot be more generic type than the one being overriden
 
 ## Try generic interface
 - Fail and Success static methods return `Try<T>`
-- `Try` can have two implementors, Success and Failure (but cannot because of cyclic dependency in the `of()` method)
+- `Try` can have two implementors (of itself), Success and Failure (but cannot because of cyclic dependency in the `of()` method)
 	- can instead implement as Success and Failure local classes
 
 ### Variable capture
 - capturing the original value 
 
-
-interface methods need to be of `public` access
+- interface methods need to be of `public` access
 
 ### `.map()` method
 - map an identity function over `R`
@@ -123,7 +171,6 @@ interface methods need to be of `public` access
 return mapper.apply(t).map(Function.<R>identity())
 ```
 
-
 ## Laws of Functor and Monad
 - can make use of side effects, but we need to encapsulate them into contexts $\implies$ contexts become pure values
 
@@ -132,7 +179,9 @@ return mapper.apply(t).map(Function.<R>identity())
 
 ### Functor Laws
 1. **Identity Law:** any mapping with an identity function should return you with the same value
+	1. for each context, if we apply a identity function, we get the same value back (get back the same behaviour)
 2. **Associative Law**: because function are associative
+	1. context with two separate functions, can apply the composition of $g \circ f$
 
 ### Monad Laws
 1. **Identity Law:** identity within a context

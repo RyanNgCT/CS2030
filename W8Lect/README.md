@@ -273,6 +273,7 @@ Predicate p1 = new A(1).foo(2)
 ## Composing Functions
 - using the `compose()` method
 	- $g \circ f \: \to$ `g.compose(f).apply(...)` [doing g first then doing f]
+		- equivalent to doing `g.apply(f.apply(x))`
 - alternative composition that is **more natural** using `andThen()` $\implies$ don't need to worry which one comes first
 	- apply through `f` first, `andThen(g)` $\to$ `f.andThen(g).apply(...)`
 
@@ -329,7 +330,7 @@ Func andThen(Func other) {
 	return new Func() {
 		int apply(int x){
 		int res = Func.this.apply(x);
-			return other.apply(res);
+		return other.apply(res);
 		}
 	};
 }
@@ -390,6 +391,8 @@ $4 ==> 11
 
 **What should we do in this case?**
 - we should map `x` to a function that can assist with addition later on
+	- we can create a lambda like: `x -> y -> x.length() + y;`
+
 ```java
 jshell> Stream.<String>of("one", "two", "three").
    ...> map(x -> x.length())
@@ -405,9 +408,75 @@ jshell> Stream.<String>of("one", "two", "three").
 |  ^----------------------------------------...
 ```
 
+- needs to have some form of *type reconciliation*
+```java
+jshell> Function<String, Function<Integer, Integer>> mapper = x -> y -> x.length() + y
+mapper ==> $Lambda/0x0000014f5a00a638@5ec0a365
+
+jshell> Stream.<String>of("one", "two", "three").
+   ...> map(mapper)
+$3 ==> java.util.stream.ReferencePipeline$3@5383967b
+```
 ### Identity Function
-i.e. `x -> x` (but can't do like this because cannot reconcile types)
-- can use an identity method
+*i.e. `x -> x`* (but can't do like this because cannot reconcile types)
+- alternative way is to use an identity method
 
 ![[Pasted image 20241007132928.png]]
 
+### Reduction with Function Composition
+- can make use of reduction to compose function (which don't need to be in order $\implies$ associativity of function composition)
+---
+## Appendix 
+
+#### `.compose()` and `.andThen()` generic inner classes
+```java
+abstract class Func<T, R> {
+    abstract R apply(T x);
+    
+    // we need to have f.compose(g)
+    <V> Func<V, R> compose(Func<V, T> other) {
+        // return outcome of the composition
+        return new Func<V, R>() {
+            R apply(V x) {
+                T res = other.apply(x);
+                return Func.this.apply(res);
+            }
+        };
+    }
+  
+
+    <V> Func<T, V> andThen(Func<R, V> other) {
+        return new Func<T, V>() {
+            V apply(T x){
+                R res = Func.this.apply(x);
+                return other.apply(res);
+            }
+        };
+    }
+}
+```
+
+
+```java
+jshell> Function<Integer,Function<Integer,Integer>> f = x -> y -> x + y
+f ==> $Lambda/0x0000014f5a00bc00@370736d9
+
+jshell> f.apply(1).andThen(f.apply(2)).andThen(f.apply(3))
+$7 ==> java.util.function.Function$$Lambda/0x0000014f5a05b058@6b09bb57
+
+jshell> Function g = f.apply(1).andThen(f.apply(2)).andThen(f.apply(3))
+g ==> java.util.function.Function$$Lambda/0x0000014f5a05b058@520a3426
+
+jshell> g.apply(0) // never specify bounded types for function
+|  Warning:
+|  unchecked call to apply(T) as a member of the raw type java.util.function.Function
+|  g.apply(0)
+|  ^--------^
+$9 ==> 6
+
+jshell> Function<Integer, Integer> g = f.apply(1).andThen(f.apply(2)).andThen(f.apply(3))
+g ==> java.util.function.Function$$Lambda/0x0000014f5a05b058@3e9b1010
+
+jshell> g.apply(0)
+$11 ==> 6
+```
