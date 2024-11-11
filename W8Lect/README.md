@@ -1,4 +1,4 @@
-# Lecture 8 - Functional Programming
+# Lecture 8 -- Functional Programming
 ## Learning Outcomes
 - what is a function and what are *pure functions*?
 	- all the functions in the domain of mathematics are considered to be pure
@@ -444,7 +444,6 @@ abstract class Func<T, R> {
         };
     }
   
-
     <V> Func<T, V> andThen(Func<R, V> other) {
         return new Func<T, V>() {
             V apply(T x){

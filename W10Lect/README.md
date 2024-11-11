@@ -1,20 +1,21 @@
 # Week 10 Lecture -- Parallel Streams
 ## Learning Outcomes
-- stream pipeline should be inherently parallel --> must assume it is parallel
+- stream pipeline should be **inherently parallel** $\implies$ must assume it is parallel
 - streams are not only about looping, it is also about parallelizing tasks
 	- Streams has an in-built parallel processing processing algorithm
 
-- not every problem is to be solved with parallel solutions $\implies$ make use of parallel streams if so
+- not every problem is to be solved with parallel solutions $\implies$ make use of parallel streams only when it is beneficial to do so
 
 - need to keep in mind that we might be passed a parallel stream to work with
 	- have certain considerations to take care of
 
 - What are stateless operations and stateful operations
 	- stateless operations suit streams very well
-	- stateless operations -- independent elements that don't depend on each other
-	- stateful -- elements are not created as independent, requires knowledge about neighbors
+	- **stateless operations** -- independent elements that don't depend on each other
+	- **stateful operations** -- elements are not created as independent, requires knowledge about neighboring elements
 
 What are non-interfering streams
+- do not have any side effects and modification on the other stream types
 
 Looking at the `reduce()` terminal operation $\implies$ associative accumulation function
 - accumulator and combiner rules
@@ -28,9 +29,10 @@ $1 ==> 15
 ```
 
 ## Concurrency vs Parallelism
-- single core machine executes one instruction at one time
+- single core machine executes *one process at one time*
 - context switching allows for multi-tasking $\to$ single CPU core has multiple threads
-	- can delegate threads to different tasks / instructions
+	- each thread can delegate work to different tasks / instructions
+	- we have threads that are spawned to work on individual tasks
 
 - seems as if it is working in parallel, but it is not in actuality
 
@@ -39,10 +41,13 @@ $1 ==> 15
 
 **Parallel Computing**
 - multiple subtasks running at the same time
+- parallel programs are concurrent, but not all concurrent programs are parallel
 
 ### From Sequential to Parallel
-- Concurrent: the OS is the one that switches between the threads
-	- at any instance of time, there is only one think that it is doing
+- **Concurrent**: the OS is the one that switches between the threads
+	- at any instance of time, there is only one thing that **one particular thread** is doing at a time
+
+![sequential-concurrent-parallel](../assets/sequential-concurrent-parallel.png)
 
 Level of Parallelism can be controlled using the `-D` flag.
 ```bash
@@ -52,12 +57,16 @@ $ jshell -R -Djava.util.concurrent.ForkJoinPool.common.parallelism=3 ...
 ```
 
 - To "switch on" parallel, we use the `parallel()` method
-	- can be anywhere, from the initial / source to the terminal operator
-	- Streams are declarative and checks everything only when it reaches the terminal operator
-	- There is a notion of element order $\to$ certain operations enable one to maintain the order, while others cannot
+	- can be anywhere **between the initial / source to the terminal operators**
+		- the effect is exactly the same!
+	- Streams are declarative and checks for parallelism in operations **only when** it reaches the **terminal operator**
+	- There is a notion of **element order** $\to$ certain operations enable one to maintain the order, while others cannot
+		- brings back the point of associative versus non-associative operations (where order may matter)
 
 - To "switch off" parallel, we use the `sequential()` method
-	- Note: never take a stream from others that has parallelism enabled and put `sequential()` $\implies$ turning off the parallelism
+	- ⚠️ *Note:* never take a stream from others that has parallelism enabled and put `sequential()` $\implies$ turning off the parallelism, which does not make any sense
+
+![sequential-factory-methods](../assets/sequential-factory-methods.png)
 
 ### `forEachOrdered()`
 - during termination, elements are processed in encounter order (how the elements are ordered by the source operation)
@@ -67,6 +76,8 @@ $ jshell -R -Djava.util.concurrent.ForkJoinPool.common.parallelism=3 ...
 - We can slow down the execution of the parallel stream using `Thread.sleep()`
 
 ## Parallel Streams
+- Streams are *inherently parallelizable*
+- able to perform reduction of stream elements using a divide and conquer strategy (i.e. the normal convention of left-reduction versus the other possibility of right-reduction $\to$ see recitation 09)
 - can use `IntStream`s as well
 
 ```java
@@ -85,7 +96,6 @@ jshell> IntStream.
 ```
 
 - we can speed up using the intermediate operation portions
-
 
 ## Stateless versus Stateful Operations
 - `map()`and `filter()` are subjected to the same predicate and hence are stateless operations
@@ -114,12 +124,19 @@ list.stream()
 
 - we can terminate with `toList()` instead (as it has no side-effects)
 
+---
 ## Association Accumulation Function
-- i.e. `reduce()`
-	- reduce with an identity and `BinaryOperator` (final value is an aggregated `T` value)
-	- reduce with no seed (returns an `Optional<T>` $\implies$ when stream is empty, return `Optional.empty`)
-	- reduce with an identity, a`BiFunction` and a `BinaryOperator` $\implies$ when we want to convert types, but we can do away with this
+- `reduce()` has 3 different possible types
+	1. reduce with an identity and `BinaryOperator` (final value is an aggregated `T` value)
+	
+	2. reduce with **no seed** (returns an `Optional<T>` $\implies$ when stream is empty, return `Optional.empty`)
+		- quite typically used
+		- `reduce()` with the use of only a `BiFunction` or accumulator
+
+	3. reduce with an identity, a`BiFunction` and a `BinaryOperator` $\implies$ when we want to convert types, but we can do away with this
 		- should be used when doing things in parallel
+		- ⚠️ not really good to use to convert types  (i.e. transform from element type to seed's type) $\implies$ better practice to use `map()` instead in this case
+
 
 ![stream-reduction-methods](../assets/stream-reduction-methods.png)
 
@@ -134,15 +151,14 @@ $5 ==> 1.5
 ```
 - sequential stream's result is always correct using the `reduce()` method
 - parallel stream's result is wrong???
-	- we cannot assume that the reduction is done nicely (24/1, then 24/2, then 12/3, then 4/4)
+	- we **cannot assume** that the reduction is done nicely (`24/1`, then `24/2`, then `12/3`, then `4/4`) $\implies$ sequential execution from one to another to ensure correctness
 
 - multiplication and addition is associative, but *division is not associative*!
+	- this will affect the reduction (is not done from left to right)
 
 - function compositions are also associative!
 
-
 We need to be careful when picking portions of the stream in which we want to exploit parallelism
-
 
 ### The 2-argument reduce
 ```java
@@ -162,7 +178,6 @@ Stream.of("one", "two", "three")
 ```
 
 In the accumulator, the identity value doesn't change
-
 #### Stream
 The stream is partitioned for each worker to do the combining in `reduce()`.
 The stream is partitioned as a tree where there are no crossing lines (to prevent double accumulation).
@@ -170,7 +185,7 @@ The stream is partitioned as a tree where there are no crossing lines (to preven
 ## Accumulator and Combiner Rules
 - don't perform typecasting within the combiner method
 
-- identity are the same type that we are combining with (when using `reduce()`)
+- identity are the **same type** that we are combining with (when using `reduce()`) $\implies$ take in type `T` seed and type `T` values
 
 
 ### Overhead of Parallelism
