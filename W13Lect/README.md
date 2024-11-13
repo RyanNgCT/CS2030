@@ -106,8 +106,8 @@ c --- f:x -> |f(x)| ---> f(c)
 ```
 
 
-- Laws of Functor and Monad (helps to ensure that map and flatMap are written correctly)
-	- Identity
+- Laws of Functor and Monad (helps to ensure that `map()` and `flatMap()` are written correctly)
+	- Identity (for monad, there are left and right identity laws)
 	- Associative
 
 
