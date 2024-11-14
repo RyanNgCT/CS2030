@@ -374,8 +374,8 @@ jshell> Maybe.<Integer>of(1).orElse(foo()) // unexpected
 foo executed
 $13 ==> 1
 ```
-- Unfortunately, `foo()` is executed when we pass in a `Maybe.<Integer>of(1)`. This is because `foo()` was eagerly evaluated and its return value is passed `orElse()` for the statement to be processed.
-	- We know that there are situations where `orElse()` **should not be executed**
+- Unfortunately, `foo()` is executed when we pass in a `Maybe.<Integer>of(1)`. This is because `foo()` was **eagerly evaluated** and its return value is passed `orElse()` for the statement to be processed.
+	- We know that there are situations where `orElse()` **should not be executed immediately**
 	- To resolve this, we wrap the function call in a supplier, which leads us to the `orElseGet()` method
 
 ### `orElseGet()`

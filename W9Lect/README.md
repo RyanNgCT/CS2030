@@ -26,7 +26,7 @@ class Main {
 }
 ```
 
-In this instance, we will use `FileReader` to **read the file**
+In this instance, we will use `FileReader` to **read a file** as an input stream.
 ```java
 public static void main(String[] args) {
     FileReader file = new FileReader(args[0]);
@@ -254,17 +254,42 @@ return mapper.apply(t).map(Function.<R>identity());
 
 ---
 ## Laws of Functor and Monad
-- can make use of side effects, but we need to encapsulate them into contexts $\implies$ contexts become pure values
-	- contexts that handle side-effects need to obey the functor and monad laws
-
-- monad enables the pipelining implementations to be abstracted by wrapping a value in a type.
-	- allows code to be imperative instead of declarative (declare what you want to do, while not having to catch stuff)
+- can make use of side effects, but we need to encapsulate them into contexts $\implies$ contexts become **pure values**
+	- contexts that handle side-effects *need to obey* the functor and monad laws
 
 ### Functor & Monad
-- a functor is a way that we look at the `map()` method (we can think of a functor as a context)
+- a **functor** is a way that we look at the `map()` method (we can think of a functor as a context)
 	- can think of a functor as a generic interface `Functor<T>`, but yet this does not exist as an interface in Java.
 
 - The use of a functor (i.e. `map()`) can be a way to manipulate a value **within the context** without logging for example.
+	- i.e. when we want to increment the `T value` of `Log` context **without** modifying the original log
+
+- **monad** enables the pipelining implementations to be abstracted by wrapping a value in a type.
+	- allows code to be imperative instead of declarative (declare what you want to do, while not having to catch stuff)
+	- monads are extensions of functors for `flatMap()`
+
+- a **monad** is a structure to **overload function composition**
+
+```java
+int f(int x) {
+	...
+	return y;
+}
+
+int g(int y) {
+	...
+	return z;
+}
+
+int main(int input) {
+	return g(f(input));
+}
+```
+
+In the functions above, we might want to do things that have side-effects like:
+1. Log each function call or function input params to a string
+2. Pass around a token
+3. Throwing an exception for $f$ and not running $g$ when it happens (in main)
 
 ### Functor Laws
 1. **Identity Law:** any mapping with an identity function should return you with the same value
@@ -289,7 +314,7 @@ h ==> $Lambda/0x00000161ac00c000@527740a2
 jshell> f.map(g).map(h)
 $14 ==> Success: 5
 
-jshell> f.map(h.compose(g)) // $14 is the same operation
+jshell> f.map(h.compose(g)) // $14 is the same operation as this
 $15 ==> Success: 5
 
 jshell> f.map(h).map(g)
@@ -299,7 +324,7 @@ $16 ==> Success: 8
 ### Monad Laws
 1. **Identity Law:** identity within a context (identity cannot be just `x -> x`, because `flatMap()` must take in `x -> Try.of(...)`)
 	1. takes in a identity of `x` wrapped in a `Try` context
-	2. Right identity Law: $f \cdot id \equiv f \implies$ `f.flatMap(id)` returns type `F` 
+	2. Right identity Law: $f \cdot id \equiv f \implies$ `f.flatMap(id)` returns type `f` 
 	3. Left Identity Law: $id \cdot f \equiv f \implies$ `id.apply(<value>).flatMap(g)` which is the same as `g.apply(value)` 
 
 ```java
@@ -338,3 +363,5 @@ $25 ==> Success: 6
 jshell> f.flatMap(x -> gg.apply(x).flatMap(ff)) // same as the above
 $26 ==> Success: 6
 ```
+
+

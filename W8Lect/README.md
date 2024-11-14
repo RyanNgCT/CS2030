@@ -7,6 +7,12 @@
 - what is closure and variable capture
 - ability to perform function composition
 	- how to delay execution until the entire function has been composed (using suppliers, apply and laziness)
+## Forecast
+*Next Week: Lecture on Exception Handling*
+- downstream module requires exception handling
+- building of context that handles exception handling to remove side-effects of exception
+	- Writing the `Try` class (which is an interface)
+
 ## Function
 - a function is a **mapping** of a set of values/elements to a set of outputs within a co-domain / range
 	- every input in the domain has **exactly one output**
@@ -25,15 +31,10 @@ i.e. `x -> x | y` (for y $\ne$ 0)
 - must be **side-effect** free (i.e. running the function does not change anything outside of it). Some side effects include:
 	- modifying *external state*
 	- program input/output (rather the practice is to collect all the outputs via `toString()`)
-	- throwing exceptions (refer to Week 9 Lecture) $\implies$ is a type of side-effect
+	- throwing exceptions (refer to Week 9 Lecture) $\implies$ is a type of *side-effect*
 
 **Absence of side-effects** is a necessary condition for *referential transparency*
 - i.e. expressions can be replaced with their resulting values without changing the property of the program
-#### Forecast
-*Next Week: Lecture on Exception Handling*
-- downstream module requires exception handling
-- building of context that handles exception handling to remove side-effects of exception
-	- Writing the `Try` class (which is an interface)
 
 #### Exercise on Slide 5
 Are these functions pure? Why or why not?
@@ -361,7 +362,6 @@ $24 ==> 6
 	- using `apply()` also enables the function to be evaluated
 
 - function composition is associative
-
 #### Delayed Applications
 Study the stream pipeline below:
 ```java
@@ -428,7 +428,7 @@ $3 ==> java.util.stream.ReferencePipeline$3@5383967b
 ---
 ## Appendix 
 
-#### `.compose()` and `.andThen()` generic inner classes
+#### `.compose()` and `.andThen()` with generic inner classes
 ```java
 abstract class Func<T, R> {
     abstract R apply(T x);

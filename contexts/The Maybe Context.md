@@ -1,11 +1,8 @@
+```java
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-// Optional.of(1);
-// new Maybe<Integer>(1);
-// Maybe.<Integer>of(1);
-// Maybe.<Integer>empty();
 
 class Maybe<T> {
     // context -> to wraps around a SINGLE value
@@ -59,7 +56,8 @@ class Maybe<T> {
     // predicate is a consumer in this case.
     Maybe<T> filter(Predicate<? super T> pred) {
         if (this.isEmpty()) {
-            return this;    // no need to filter anymore
+	        // no need to filter anymore since it doesn't contain anything
+            return this;
         }
         // abstract method of Predicate
         if (pred.test(this.get())) {
@@ -123,10 +121,6 @@ class Maybe<T> {
         if (this.isEmpty()) {
             return Maybe.<R>empty();
         }
-
-        // Maybe<? extends R> val = mapper.apply(this.get());
-        // return Maybe.<R>of(val.get());
-
         return mapper.apply(this.get()).map(Function.<R>identity());
     }
 
@@ -139,3 +133,5 @@ class Maybe<T> {
         return "Maybe[" + this.get() + "]";
     }
 }
+
+```
