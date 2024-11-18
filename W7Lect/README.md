@@ -125,9 +125,6 @@ private boolean isEmpty() {
 	return this.value == null;
 }
 ```
-- should make these helper methods **with the `private` access modifier** so that client's cannot use it.
-	- only the **context itself** should be able to access them
-
 ### `get()`
 ```java
 private T get() {
@@ -135,6 +132,8 @@ private T get() {
 }
 ```
 
+- should make these helper methods, as above like `isEmpty()` and `get()` **with the `private` access modifier** so that clients cannot use it.
+	- only the **context itself** should be able to access them
 ### `equals()` -- for comparing objects
 ```java
 @Override
@@ -241,7 +240,7 @@ $9 ==> Maybe[1]
 - takes in a function with input `T`
 	- check if the mapper is empty
 	- apply the mapper on the target if not empty and return the wrapped value of the one *produced by mapper*
-- it returns anything (need not be a `T`)
+- it returns anything (need not be of type `T`), hence we denote `R`
 
 ```java
 <R> Maybe<R> map(Function<? super T, ? extends R> mapper)
@@ -269,8 +268,10 @@ Optional.<Integer>of(1).flatMap(x -> Optional.of(x + 1)) // ✅
 
 - lambda function in `flatMap()` itself must have the same type as the one we started with
 
+- `flatMap()` return must be of the same type as the context that is is contained within $\implies$ deals with the double nesting of objects
+
 #### The generality of `flatMap()`
-We start out with this general method signature, which is similar to `map()`, but the return type inside the function itself would be an `Optional<R>`.
+We start out with this general method signature, which is similar to `map()`, but the return type inside the function itself would be similar to an `Optional<R>` $\implies$ a `Maybe<R>` in this case
 ```java
 import java.util.function.Function;
 ...
@@ -316,7 +317,7 @@ lmn ==> [Maybe[1]]
 	- every level of invariance needs to be resolved, hence we need to have something like this.
 
 Thus, the appropriate method signature should look something like:
-- to resolve both levels of invariances.
+- to resolve both levels of invariances $\implies$ need to have the wildcards for each of the "layers"
 ```java
 <R> Maybe<R> flatMap(Function <? super T, ? extends Optional<? extends R>> mapper){
 ...
@@ -344,7 +345,7 @@ T orElseGet(Supplier<? extends T> supplier) {
 	return this.get();
 }
 ```
-- supplier provides us with lazy evaluation (i.e. Streams) $\implies$ it is a producer so we use `? extends T`
+- supplier provides us with lazy evaluation (i.e. Streams) $\implies$ it is a **producer** so we use `? extends T` in this case
 
 ###  Consumer (not mentioned here)
 - producer extends consumer super
@@ -374,23 +375,22 @@ jshell> Maybe.<Integer>of(1).orElse(foo()) // unexpected
 foo executed
 $13 ==> 1
 ```
-- Unfortunately, `foo()` is executed when we pass in a `Maybe.<Integer>of(1)`. This is because `foo()` was **eagerly evaluated** and its return value is passed `orElse()` for the statement to be processed.
+- Unfortunately, `foo()` is executed when we pass in a `Maybe.<Integer>empty()`. This is because `foo()` was **eagerly evaluated** and its return value is passed `orElse()` for the statement to be processed.
 	- We know that there are situations where `orElse()` **should not be executed immediately**
 	- To resolve this, we wrap the function call in a supplier, which leads us to the `orElseGet()` method
 
 ### `orElseGet()`
-
+- `orElseGet` works with a supplier, until `orElseGet()` is trigger (probably by `Maybe.empty`, then we execute whatever is in the supplier itself.)
 ```java
-jshell> Maybe.<Integer>of(10).orElseGet(sup)
-$19 ==> 10
+jshell> Supplier<Integer> sup = () -> -1;
+sup ==> $Lambda/0x000001876200a648@5ce81285
 
-jshell> Maybe.<Integer>of(10).orElseGet(() -> foo())
-$20 ==> 10
+jshell> Maybe.<Integer>of(10).orElseGet(sup)
+$7 ==> 10
 
 jshell> Maybe.<Integer>empty().orElseGet(sup)
-foo executed
-$17 ==> -1
+$8 ==> -1
 ```
 
 ### Effects of Lazy Evaluation
-- instead of relying on streams to provide the laziness, we want to ourselves create something (a context) that provides lazy evaluation
+- instead of relying on streams to provide the laziness, we want to ourselves create something (a context) that provides lazy evaluation (i.e. in the recitation)

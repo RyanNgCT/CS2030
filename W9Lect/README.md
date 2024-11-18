@@ -4,7 +4,7 @@
 - intended for the purpose of **exception handling**
 
 ## Imports
-- `FileNotFoundException` must be explicitly managed
+- `FileNotFoundException` must be **explicitly managed**
 	- if java sees that it is not managed, the code will not compile
 	- `FileReader` $\implies$ throws exceptions even before file is opened
 	

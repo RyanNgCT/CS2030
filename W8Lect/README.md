@@ -165,7 +165,6 @@ $4 ==> $Lambda/0x0000028a3500ac60@71423665
 jshell> curriedFunc.apply(10).apply("hello")
 $5 ==> 15
 ```
-
 - Writing the types is cumbersome, otherwise currying is a neat way to take in functions as arguments.
 
 #### Curried Functions / Partial Application - under the hood
@@ -372,8 +371,9 @@ $1 ==> 11
 ```
 
 - to compose functions for *delayed applications*, we need to:
-	1. `map()` each string `x` to `Function<Integer, Integer>`
-	2. perform a reduction using reduce with an identity function of the type `Function<Integer, Integer>`
+	1. **`map()`** each string `x` to `Function<Integer, Integer>`
+	2. perform a **reduction** using reduce with an identity function of the type `Function<Integer, Integer>`
+	3. finally use **`.apply()`** when we wish to retrieve the outcome
 
 ```java
 jshell> Function<String, Function<Integer, Integer>> mapper = x -> y -> x.length() + y
@@ -419,12 +419,13 @@ $3 ==> java.util.stream.ReferencePipeline$3@5383967b
 ```
 ### Identity Function
 *i.e. `x -> x`* (but can't do like this because cannot reconcile types)
-- alternative way is to use an identity method
+- alternative way is to use an identity method $\implies$ `Function.<R>identity()`
 
 ![function-composition-methods](../assets/function-composition-methods.png)
 
 ### Reduction with Function Composition
 - can make use of reduction to compose function (which don't need to be in order $\implies$ associativity of function composition)
+
 ---
 ## Appendix 
 

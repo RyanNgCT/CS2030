@@ -89,5 +89,4 @@ interface Try<T> {
     <R> Try<R> flatMap(Function<? super T, ? extends Try<? extends R>> mapper);
     public boolean equals(Object obj);
 }
-
 ```
