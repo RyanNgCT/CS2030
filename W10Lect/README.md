@@ -253,6 +253,8 @@ void foo() {
 
 ---
 ## Association Accumulation Function
+> ⚠️ Key Idea: Parallel Reduction needs to be associative!
+
 `reduce()` has 3 different possible types
 1. reduce with an **identity and `BinaryOperator`** (final value is an aggregated `T` value)
 	- is the most commonly seen and used
