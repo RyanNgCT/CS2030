@@ -150,6 +150,9 @@ CompletableFuture.<B>supplyAsync(() -> f(new A(5))).join();
 ```
 ### Creation of a `CompletableFuture` -- using `runAsync()`
 - another alternative method is `runAsync()` that takes in a Runnable
+	- recall from below that we should have `thenRun()` and `thenRunAsync()` for separate instances of the `CompletableFuture` to fully maximize Asynchronism (spawn in separate threads)
+
+- we can pass in a Runnable which is sort of *similar to a consumer*
 
 ## Callbacks
 We spawn a thread to do $f$ and after it finishes $f$, we do $g$ immediately $\implies$ have to tag on something to the pipeline
@@ -211,11 +214,26 @@ We can also alternatively do `cfe` as:
 CompletableFuture<E> cfe = cfc.thenCompose(c -> cfd.thenApply(d -> n(c, d)));
 ```
 ### Converting Synchronous Code to Asynchronous
-- instead of using `supplyAsync`, we can just use a `completedFuture()`
+- instead of using `supplyAsync`, we can just use a `completedFuture()` for **already computed values**
 	- somewhat like the `of()` factory method
 
+```java
+if (x < 0) {
+	return CompletableFuture.<Integer>completedFuture(0);
+}
+```
+
 Two types of wrapper
-1. for work (supplier)
-2. to wrap a value that has already been completed
+1. for work (supplier), which we spawn off in a thread to do
+2. to wrap a value that has already been completed (see above code)
 
 can use `thenApply()` when dealing with combinations of synchronous and asynchronous versions (i.e. implies the need to have a `join()` to wait for it to finish)
+- `foo()` is asynchronous, `bar()` is synchronous
+```java
+foo(5).thenApply(x -> bar(x)).join();
+```
+
+can use `thenCompose()` or `flatmap` when dealing with **two or more** asynchronous functions
+```java
+foo(5).thenCompose(x -> bar(x)).join();
+```
