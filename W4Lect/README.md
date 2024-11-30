@@ -75,7 +75,6 @@ jshell> double findVolume(Shape s, double height){
 
 jshell> findVolume(s, 1.0);
 $11 ==> 12.566370614359172
-
 ```
 
 Note: the `findVolume()` method takes in something of "interface type" `Shape`, but **not a Shape object** $\implies$ since Shape cannot be instantiated (it is an interface)
@@ -90,7 +89,6 @@ $18 ==> 30.0
 
 jshell> findVolume(rect, 10)
 $19 ==> 300.0
-
 ```
 
 ```java
@@ -197,8 +195,8 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 - are interfaces that we can use to declare lambda types
 #### Types of Functional Interfaces
 1. **Primitive Functional Interfaces**
-	1. interfaces whose type is fixed (i.e. `IntPredicate`)
-	2. refer to documentation for single abstract methods that need to be implemented
+	1. interfaces whose *type is fixed* (i.e. `IntPredicate`)
+	2. refer to documentation for **single abstract methods** that need to be implemented
 		1. i.e. `test(int x)` for `IntPredicate`
 		2. i.e. `applyAsInt(int x)` for `IntUnaryOperator`
 
@@ -218,13 +216,21 @@ jshell> s1.moveBy(1,1) // errors out as s1 is-a Shape "type"
 		![generic-int-comparator-abstract-method](../assets/generic-int-comparator-abstract-method.jpg)
 		3. Lambda expression as a `Comparator`
 		```java
-		Comparator<String> cmpLen = (x, y) -> x.length() - y.length();
-		cmpLen("xyz", "abc"); // returns 0
-
-		List.of("abc", "xyz").sort(cmpLen) // cannot sort the list -> immutable
+		jshell> Comparator<String> cmpLen = (x, y) -> x.length() - y.length();
+		cmpLen ==> $Lambda/0x0000029a1800db70@7d907bac
 		
-		// get a new list that is sorted
-		List.of("abc", "xyz").stream().sorted(cmpLen).toList() 
+		jshell> cmpLen.compare("xyz", "abc"); // returns 0 as strings same length
+		$13 ==> 0
+
+		// cannot sort the list -> immutable
+		jshell> List.of("abc", "xyz").sort(cmpLen)
+		|  Exception java.lang.UnsupportedOperationException
+		|        at ImmutableCollections.uoe (ImmutableCollections.java:142)
+		|        at ImmutableCollections$AbstractImmutableList.sort   (ImmutableCollections.java:263)
+		|        at (#14:1)
+		
+		jshell> List.of("abc", "xyz").stream().sorted(cmpLen).toList()
+		$15 ==> [abc, xyz]
 		```
 
 	4. Additional example: `UnaryOperator<T>`

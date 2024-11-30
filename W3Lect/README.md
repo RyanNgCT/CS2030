@@ -2,8 +2,8 @@
 
 ## Data Process Model vs OOP
 - i.e. `distanceBtwn(Point a, Point b)` method
-    - Points -> are the data (method takes in two params)
-    - seperate from the process (which is the `distanceBtwn` function itself)
+    - Points $\implies$ are the data (method takes in two params)
+    - separate from the process (which is the `distanceBtwn()` function itself)
 
 - i.e. `distanceTo(Point othr)` method
     - requires just one other point to find the difference between itself and the other point
@@ -45,14 +45,14 @@
 
 ## Class conventions
 - constructor of the class is the *same as the class name* itself
-- `--enable-preview` option when compiling is only needed for a nameless class
+- use the flag `--enable-preview` option when compiling is only needed for a **nameless class** (not necessary for classes with names).
 
 ### Constructor
-- should take in all the `private` properties defined in the class
-- anytime we are referring to certain properties / methods within the class -> use the `this` keyword.
-- we invoke the constructor through the `new` keyword.
+- should take in all the **`private` properties** defined in the class
+- anytime we are referring to certain properties / methods within the class $\implies$ use the `this` keyword.
+- we invoke the **constructor** through the `new` keyword.
 
-### ToString method
+### `toString()` method
 - allows the output to be "customized" if someone wants to print the point that is meaningful to the client/user
 - usually at the end because it is the most unimportant
 ```java
@@ -97,12 +97,15 @@ Objects should be immutable!
 
 ### Record
 - can print values (purpose is to store values)
+```java
+record Pair<T, U>(T t, U u){};
+```
 
 ## Optionals
 - Don't use `null`, use optionals instead (sometimes have something, sometimes don't have it)
     - wrap optional around the type that we might not have
 
-- Optional.empty() is a value in the domain of a function
+- `Optional.empty()` is a value in the domain of a function
     - have a correct type to include the missing type (or in this case `Optional<Point>`)
 
 - use `.map()` (typically) or `filter()` to do something to the value contained inside the optional (some operation)
@@ -126,10 +129,19 @@ $17 ==> [1.4142135623730951, 1.4142135623730951]
 ```
 
 ### Abstraction Barrier
-- no longer client's concern to know about formula for calculate distanceTo (i.e. $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$ )
+- no longer client's concern to know about formula for calculate `distanceTo()` (i.e. $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$ )
 - avoid providing backdoor access to properties
 
 ---
 
 Try to implement `isOverlap` -> of a circle class that takes in another circle.
-- solved already, refer to recitation 2 question 3.
+```java
+boolean isOverlap(Circle other) {
+	return this.centre
+		.flatMap(c
+			 -> other.centre
+					.map(k -> c.distanceTo(k) < this.radius + other.radius)
+					.orElse(false))
+		.orElse(false);
+}
+```

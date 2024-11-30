@@ -4,7 +4,7 @@
 1. `jshell` is used for people who are new to Java.
     - use `Ctrl-L` to for unit testing, prototyping etc.
 
-2. Java is a statically-typed language with struct type checking
+2. Java is a statically-typed language with strict type checking
     - need to develop sense of type awareness when coding
     - everything revolves around typing -> return type, input param types
 
@@ -29,7 +29,7 @@ jshell> double myFunc(double inputParam){
     - **Wrapper Types / Wrapper Objects**: primitive values can "wrapped ard"/ boxed up their Wrapper Types (i.e. `Integer`, `Double`, `Boolean`)
 	    - default values for these are null
 	    - are immutable (need to create a new instance when performing operations in memory) and are final (can't inherit from them)
-\
+
 - wrapper classes/types add functionality to existing classes without inheritance or convert a primitive data type into a class
 ### Autoboxing and Unboxing
 - *def* Autoboxing: the auto conversion of primitive types to corresponding object wrapper classes
@@ -90,7 +90,7 @@ home.desc();
 ```
 
 4. `.equals()` method
-	- written in the "proper" way
+	- written in the "proper" way (to *compare two objects*)
 ```java
 home.equals(new Location("home", 1.0, 2.0));
 ```
