@@ -264,7 +264,7 @@ x -> x = y + z // from where one???
 Predicate p1 = new A(1).foo(2)
 ```
 
-- The reference is called `A.this()` $\implies$ using a qualified list (i.e. to reference the `z` initialized in class A, we use `A.this.z`).
+- The reference is called `A.this()` $\implies$ using a qualified **this** (i.e. to reference the `z` initialized in class A, we use `A.this.z`).
 	- this is particularly useful when writing anonymous inner classes
 
 - Java only allows local classes to capture variables that are **explicitly declared as `final` or effectively final**
@@ -272,7 +272,7 @@ Predicate p1 = new A(1).foo(2)
 
 ## Composing Functions
 - using the `compose()` method
-	- $g \circ f \: \to$ `g.compose(f).apply(...)` [doing g first then doing f]
+	- $g \circ f \: \to$ `g.compose(f).apply(...)` [doing f first then doing g]
 		- equivalent to doing `g.apply(f.apply(x))`
 - alternative composition that is **more natural** using `andThen()` $\implies$ don't need to worry which one comes first
 	- apply through `f` first, `andThen(g)` $\to$ `f.andThen(g).apply(...)`

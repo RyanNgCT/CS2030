@@ -1,9 +1,9 @@
 # Lecture 5 - Inheritance and Substitutability
 - inheritance supports the `is-a` relationship (implementing interfaces)
 - is about classes now
-### Principles to follow
+### Principles to follow   
 1. *Don't Repeat Yourself*
-	- if we need to have duplicated quote, it should just reside in one location/place (i.e. one file only)
+	- if we need to have duplicated code, it should just reside in **one location**/place (i.e. one file only)
 
 2. *Abstraction Principle*
 	- each significant piece of functionality should be implemented in **one place** in the source code
@@ -193,10 +193,10 @@ Circle circ = new FilledCircle(1.0, Color.BLUE)
 	2. Polymorphism occurs at this stage
 
 #### Static & Dynamic Binding
-- during compilation, static binging helps to do the solution of methods to call (including overloaded methods)
+- during compilation, static binging helps to do the resolution of methods to call (including overloaded methods)
 
-- only during runtime, dynamic binding resolves the actual method to be called among all overriding methods
-	- get to the actual object type itself to run the `getArea()` method (Circle, Square, Rectangle?)
+- only during **runtime**, dynamic binding resolves the actual method to be called among all overriding methods
+	- get to the actual object type itself to run the `getArea()` method (for Circle, Square, Rectangle? $\implies$ depending on the run time object type)
 
 ---
 ### Object equality
@@ -281,7 +281,7 @@ public boolean equals(Object obj){
 
 **Abstract Classes** have the following:
 - properties
-- usually have $\gt 1$ abstract method (to be implemented by their children)
+- usually have $\geq 1$ abstract method (to be implemented by their children)
 	- they don't contain a method body/implementation details
 - other methods (i.e. `toString()`)
 

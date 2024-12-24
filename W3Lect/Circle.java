@@ -11,10 +11,6 @@ class Circle implements Comparable<Circle>{
         this.radius = radius;
     }
 
-    private double getRadius(){
-        return this.radius;
-    }
-
     boolean contains(Point pt){
         return this.centre.distanceTo(pt) < this.radius;
     }
@@ -30,7 +26,8 @@ class Circle implements Comparable<Circle>{
     // quite overkill but
     // determine which circle is the bigger one by using the radius for comparison
     public int isBigger(Circle other) {
-        Comparator<Circle> basis = (x, y) -> Double.compare(x.getRadius(), y.getRadius());
+        Comparator<Circle> basis = (x, y) -> Double.compare(x.radius, y.radius);
+        // Comparator<Circle> basis = (x, y) -> Double.compare(x.getRadius(), y.getRadius());
         return basis.compare(this, other);
     }
 

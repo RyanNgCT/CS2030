@@ -1,3 +1,1 @@
-# Project
-
-- WIP
+# Project (a.k.a. lab06)

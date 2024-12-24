@@ -6,6 +6,8 @@ Herein lies my notes and code for this monster of a module.
 
 Sem Taken: `AY24/25 Sem 1`
 
+Final Grade: `B+` (maybe could have boosted to `A-` had I not screw up finals)
+
 ### Module Review
 
 WIP.

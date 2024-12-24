@@ -135,7 +135,7 @@ Pair poll() {
 jshell> new PQ().add(1).add(2).poll().u().poll().u().poll()
 $12 ==> Pair[t=null, u=[]]
 ```
-As per above, still need not take care or the `null` appearing.
+As per above, still need not take care of the `null` appearing when there are no more elements.
 
 ```java
 Pair<Optional<E>, GPQ<E>> poll() {
@@ -150,6 +150,18 @@ Pair<Optional<E>, GPQ<E>> poll() {
 ```
 To handle that after declaring the generic types, we can make the pair (first element return an `Optional<E>`, since this can indicate an absence of a value in place of `null`).
 
+Handling `null` should be done because it is a valid `T` type (which shouldn't be the case) and eradicate `null` checks.
+```java
+jshell> Integer i = null
+i ==> null
+
+jshell> String s = null
+s ==> null
+
+jshell> Circle c = null
+c ==> null
+```
+
 ---
 ## Using generics
 Allows the PQ class to take in different class type.
@@ -157,7 +169,7 @@ Allows the PQ class to take in different class type.
 
 Generics allow us to input *parameterized types*, have `PQ<Integer>`, `PQ<String>`, `PQ<Shape>`, `PQ<Circle>` etc. into a single "instance"
 
-> *def*: Generic type declaration is when we do `PQ<E>` or `LinkedList<E>` in a class etc.
+> *def*: **Generic type declaration** is when we indicate the reference type, such as `PQ<E>` or `LinkedList<E>` in a class 
 
 ### Conventions
 Using a single capital letter to denote
